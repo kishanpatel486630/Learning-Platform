@@ -1,253 +1,69 @@
-# LearnPath — Exam & Interview Prep Platform
+LearnPath — Exam & Interview Prep Platform
+A comprehensive exam preparation and interview readiness platform built for Indian engineering students. Pure vanilla HTML/CSS/JS — no build tools required.
 
-A full-stack web application designed for **Indian engineering students** to prepare for placement exams, competitive exams, and coding interviews.
+Features
+Exam Preparation — TCS NQT, Infosys, Wipro, Cognizant, Accenture, GATE CS, DSA Placement
+Interview Prep — Round-by-round workflows with AI feedback
+AI Tutor — Powered by Google Gemini (Tutor, Solver, Explain, Interview Coach modes)
+Question Bank — 1000s of previous year questions with AI generation
+Study Planner — Weekly calendar, task management, Pomodoro timer
+Notes — Personal notes with tags, colors, search
+Leaderboard — Compete with friends, study races
+Analytics — Progress tracking, heatmaps, category breakdowns
+XP & Gamification — Earn XP, maintain streaks, unlock achievements
+Dual Theme — Dark (purple neon) & Light (clean white)
+Tech Stack
+Layer	Technology
+Frontend	Vanilla HTML, CSS, JS
+Auth	Firebase 9.23.0 (compat SDK)
+AI	Google Gemini API (gemini-2.0-flash)
+PDF	jsPDF 2.5.1
+Fonts	Syne, DM Sans, JetBrains Mono
+State	localStorage (syncs to Firestore when configured)
+Project Structure
+├── login.html            # Auth (login/register/Google)
+├── profile-setup.html    # 4-step onboarding wizard
+├── index.html            # Dashboard
+├── exams.html            # Exam categories & quiz engine
+├── interview-prep.html   # Company interview workflows
+├── question-bank.html    # Question bank with AI generation
+├── ai-tutor.html         # Chat-based AI tutor
+├── study-planner.html    # Calendar + Pomodoro timer
+├── notes.html            # Personal notes
+├── leaderboard.html      # Friend races & rankings
+├── analytics.html        # Progress analytics
+├── settings.html         # API key, theme, preferences
+├── profile.html          # Profile view & edit
+├── css/
+│   ├── variables.css     # Theme variables (dark/light)
+│   ├── sidebar.css       # Collapsible sidebar
+│   └── pages.css         # Shared component library
+└── js/
+    ├── state.js          # State management (40+ fields)
+    ├── sidebar.js        # Sidebar component & navigation
+    ├── gemini-api.js     # Gemini AI integration
+    ├── firebase-config.js # Firebase auth & Firestore
+    └── data/
+        └── exams-data.js # Exam categories, companies, sample questions
+Setup
+Open login.html in a browser
+Register/login (works in demo mode without Firebase)
+Complete the 4-step profile setup
+Start studying!
+Optional: Add your Gemini API key in Settings → AI Configuration for AI-powered features.
 
----
-
-## 🏗️ Tech Stack
-
-| Layer      | Technology                     |
-| ---------- | ------------------------------ |
-| Frontend   | Vanilla HTML/CSS/JS (13 pages) |
-| Backend    | Python Flask 3.1               |
-| Database   | MongoDB (PyMongo)              |
-| Auth       | JWT (access + refresh tokens)  |
-| AI         | Google Gemini 2.0 Flash        |
-| Deployment | Gunicorn / Render / Railway    |
-
----
-
-## 📁 Project Structure
-
-```
-Learning Track Website/
-├── frontend/                    # Static frontend files
-│   ├── css/
-│   │   ├── variables.css        # Design tokens & themes
-│   │   ├── sidebar.css          # Collapsible sidebar styles
-│   │   └── pages.css            # All page styles
-│   ├── js/
-│   │   ├── api.js               # Backend API client
-│   │   ├── auth.js              # JWT auth handler
-│   │   ├── state.js             # State management + backend sync
-│   │   ├── sidebar.js           # Sidebar component
-│   │   ├── gemini-api.js        # Direct Gemini client (fallback)
-│   │   └── data/exams-data.js   # Exam categories data
-│   └── *.html                   # 13 pages (login, dashboard, exams, etc.)
-│
-├── backend/                     # Python Flask API
-│   ├── app.py                   # Flask app entry point
-│   ├── config.py                # Configuration from .env
-│   ├── requirements.txt         # Python dependencies
-│   ├── .env                     # Environment variables (not in git)
-│   ├── models/                  # MongoDB document schemas
-│   │   ├── user.py
-│   │   ├── note.py
-│   │   ├── question.py
-│   │   └── race.py
-│   ├── middleware/
-│   │   └── auth.py              # JWT auth decorator
-│   ├── routes/                  # API route blueprints
-│   │   ├── auth.py              # /api/auth/*
-│   │   ├── user.py              # /api/user/*
-│   │   ├── notes.py             # /api/notes/*
-│   │   ├── exams.py             # /api/exams/*
-│   │   ├── questions.py         # /api/questions/*
-│   │   ├── planner.py           # /api/planner/*
-│   │   ├── leaderboard.py       # /api/leaderboard/*
-│   │   └── ai.py                # /api/ai/*
-│   └── utils/
-│       └── helpers.py           # DB helpers, XP/streak utils
-│
-├── .env.example                 # Template for environment vars
-├── .gitignore
-└── README.md
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Python 3.10+**
-- **MongoDB** (local or [MongoDB Atlas](https://www.mongodb.com/atlas) free tier)
-
-### 1. Clone & Setup Backend
-
-```bash
-cd backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-# Activate (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Configure Environment
-
-```bash
-# Copy example env and edit
-cp ../.env.example .env
-# Edit .env with your MongoDB URI, JWT secret, and Gemini API key
-```
-
-### 3. Start MongoDB
-
-```bash
-# If using local MongoDB
-mongod
-
-# Or use MongoDB Atlas — update MONGO_URI in .env
-```
-
-### 4. Run the Server
-
-```bash
-# Development
-python app.py
-
-# Production
-gunicorn app:app --bind 0.0.0.0:5000
-```
-
-The app runs at **http://localhost:5000**
-
----
-
-## 📡 API Endpoints
-
-### Auth (`/api/auth`)
-
-| Method | Endpoint  | Description          |
-| ------ | --------- | -------------------- |
-| POST   | /register | Create new account   |
-| POST   | /login    | Login & get tokens   |
-| POST   | /refresh  | Refresh access token |
-| GET    | /me       | Get current user     |
-
-### User (`/api/user`)
-
-| Method | Endpoint            | Description               |
-| ------ | ------------------- | ------------------------- |
-| GET    | /profile            | Get user profile          |
-| PUT    | /profile            | Update profile fields     |
-| PUT    | /profile-setup      | Complete onboarding       |
-| PUT    | /settings           | Update settings           |
-| GET    | /progress           | Get XP, streak, activity  |
-| POST   | /xp                 | Add XP points             |
-| PUT    | /exam-progress      | Update exam progress      |
-| PUT    | /interview-progress | Update interview progress |
-| POST   | /answer-question    | Record question answer    |
-| POST   | /bookmark           | Toggle question bookmark  |
-
-### Exams (`/api/exams`)
-
-| Method | Endpoint     | Description         |
-| ------ | ------------ | ------------------- |
-| GET    | /            | List all exams      |
-| GET    | /:id         | Get exam details    |
-| POST   | /:id/results | Submit quiz results |
-
-### Questions (`/api/questions`)
-
-| Method | Endpoint | Description               |
-| ------ | -------- | ------------------------- |
-| GET    | /        | List (filter by category) |
-| POST   | /        | Create question           |
-| GET    | /:id     | Get single question       |
-| DELETE | /:id     | Delete question (owner)   |
-
-### Notes (`/api/notes`)
-
-| Method | Endpoint | Description      |
-| ------ | -------- | ---------------- |
-| GET    | /        | List with search |
-| POST   | /        | Create note      |
-| PUT    | /:id     | Update note      |
-| DELETE | /:id     | Delete note      |
-
-### Planner (`/api/planner`)
-
-| Method | Endpoint  | Description             |
-| ------ | --------- | ----------------------- |
-| GET    | /         | List tasks (by date)    |
-| POST   | /         | Create task             |
-| PUT    | /:id      | Update / toggle task    |
-| DELETE | /:id      | Delete task             |
-| POST   | /pomodoro | Record pomodoro (+15XP) |
-
-### Leaderboard (`/api/leaderboard`)
-
-| Method | Endpoint        | Description         |
-| ------ | --------------- | ------------------- |
-| GET    | /               | Get rankings        |
-| GET    | /friends        | List friends        |
-| POST   | /friends        | Add friend by email |
-| DELETE | /friends/:id    | Remove friend       |
-| GET    | /races          | List races          |
-| POST   | /races          | Create race         |
-| GET    | /races/:id      | Race details        |
-| POST   | /races/:id/join | Join a race         |
-
-### AI (`/api/ai`)
-
-| Method | Endpoint            | Description                |
-| ------ | ------------------- | -------------------------- |
-| POST   | /chat               | Free-form AI chat          |
-| POST   | /generate-questions | Generate MCQ questions     |
-| POST   | /hint               | Get hint for a question    |
-| POST   | /explain            | Explain a concept          |
-| POST   | /study-plan         | Generate study plan        |
-| POST   | /solve              | Solve problem step-by-step |
-| POST   | /interview-tips     | Get interview tips         |
-| POST   | /mock-interview     | Mock interview questions   |
-
----
-
-## 📱 Pages
-
-1. **Login** — Email/password auth with JWT
-2. **Profile Setup** — 4-step onboarding wizard
-3. **Dashboard** — XP, streak, activity overview
-4. **Exams** — Browse & practice exam categories
-5. **Interview Prep** — Company-wise interview prep
-6. **Question Bank** — Searchable questions + bookmarks
-7. **AI Tutor** — Gemini-powered study assistant
-8. **Study Planner** — Tasks + Pomodoro timer
-9. **Notes** — Create & organize study notes
-10. **Leaderboard** — Rankings + friend races
-11. **Analytics** — Study progress charts
-12. **Settings** — Theme, API key, preferences
-13. **Profile** — View/edit profile
-
----
-
-## 🌐 Deployment (Free Tier)
-
-### Render
-
-1. Push to GitHub
-2. Create Web Service on [render.com](https://render.com)
-3. Build command: `pip install -r backend/requirements.txt`
-4. Start command: `cd backend && gunicorn app:app`
-5. Add environment variables in Render dashboard
-
-### MongoDB Atlas
-
-1. Create free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Get connection string and add to `MONGO_URI`
-
----
-
-## 📄 License
-
-MIT — Built for Indian engineering students 🇮🇳
-#   L e a r n i n g - P l a t f o r m  
- 
+Pages Overview
+Page	Description
+Login	Split-panel auth with Google sign-in
+Profile Setup	Personal → Education → Goals → Schedule wizard
+Dashboard	Welcome banner, stats, quick actions, activity heatmap
+Exams	Category grid, section drilldown, timed quiz engine
+Interview Prep	Company cards, round timelines, mock interviews
+Question Bank	Search/filter/bookmark, AI question generation
+AI Tutor	4-mode chat with context-aware prompts
+Study Planner	Week view, task CRUD, Pomodoro timer, AI plans
+Notes	Create/edit/delete with tags and color coding
+Leaderboard	XP/streak/questions rankings, study races
+Analytics	Stats grid, heatmap, charts, activity timeline
+Settings	API key, theme, study prefs, data export/import
+Profile	Full profile view with achievements system
