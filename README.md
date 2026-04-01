@@ -1,253 +1,79 @@
-# LearnPath — Exam & Interview Prep Platform
+# Learning Platform
 
-A full-stack web application designed for **Indian engineering students** to prepare for placement exams, competitive exams, and coding interviews.
+Full-stack learning platform for exam preparation and interview practice. Backend: Flask + MongoDB with JWT auth and Gemini-powered AI. Frontend: static HTML/CSS/JS served by Flask.
 
----
+## Tech Stack
 
-## 🏗️ Tech Stack
+- Frontend: Vanilla HTML/CSS/JS (13 pages)
+- Backend: Python Flask 3.1
+- Database: MongoDB (PyMongo)
+- Auth: JWT access + refresh tokens
+- AI: Google Gemini (configurable key)
 
-| Layer      | Technology                     |
-| ---------- | ------------------------------ |
-| Frontend   | Vanilla HTML/CSS/JS (13 pages) |
-| Backend    | Python Flask 3.1               |
-| Database   | MongoDB (PyMongo)              |
-| Auth       | JWT (access + refresh tokens)  |
-| AI         | Google Gemini 2.0 Flash        |
-| Deployment | Gunicorn / Render / Railway    |
-
----
-
-## 📁 Project Structure
+## Structure
 
 ```
-Learning Track Website/
-├── frontend/                    # Static frontend files
-│   ├── css/
-│   │   ├── variables.css        # Design tokens & themes
-│   │   ├── sidebar.css          # Collapsible sidebar styles
-│   │   └── pages.css            # All page styles
-│   ├── js/
-│   │   ├── api.js               # Backend API client
-│   │   ├── auth.js              # JWT auth handler
-│   │   ├── state.js             # State management + backend sync
-│   │   ├── sidebar.js           # Sidebar component
-│   │   ├── gemini-api.js        # Direct Gemini client (fallback)
-│   │   └── data/exams-data.js   # Exam categories data
-│   └── *.html                   # 13 pages (login, dashboard, exams, etc.)
-│
-├── backend/                     # Python Flask API
-│   ├── app.py                   # Flask app entry point
-│   ├── config.py                # Configuration from .env
-│   ├── requirements.txt         # Python dependencies
-│   ├── .env                     # Environment variables (not in git)
-│   ├── models/                  # MongoDB document schemas
-│   │   ├── user.py
-│   │   ├── note.py
-│   │   ├── question.py
-│   │   └── race.py
-│   ├── middleware/
-│   │   └── auth.py              # JWT auth decorator
-│   ├── routes/                  # API route blueprints
-│   │   ├── auth.py              # /api/auth/*
-│   │   ├── user.py              # /api/user/*
-│   │   ├── notes.py             # /api/notes/*
-│   │   ├── exams.py             # /api/exams/*
-│   │   ├── questions.py         # /api/questions/*
-│   │   ├── planner.py           # /api/planner/*
-│   │   ├── leaderboard.py       # /api/leaderboard/*
-│   │   └── ai.py                # /api/ai/*
-│   └── utils/
-│       └── helpers.py           # DB helpers, XP/streak utils
-│
-├── .env.example                 # Template for environment vars
-├── .gitignore
-└── README.md
+frontend/   # Static pages, styles, and JS (api/auth/state/sidebar helpers)
+backend/    # Flask app, routes, models, middleware, helpers
+.env.example # Environment template
 ```
 
----
+## Quick Start
 
-## 🚀 Getting Started
+1. Copy env file and fill values
 
-### Prerequisites
+```
+cp .env.example .env   # or copy via Explorer on Windows
+```
 
-- **Python 3.10+**
-- **MongoDB** (local or [MongoDB Atlas](https://www.mongodb.com/atlas) free tier)
+2. Create venv and install deps
 
-### 1. Clone & Setup Backend
+```
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+source .venv/bin/activate   # macOS/Linux
+pip install -r backend/requirements.txt
+```
 
-```bash
+3. Run MongoDB locally (or point MONGO_URI to Atlas).
+4. Launch server
+
+```
+python backend/app.py
+```
+
+Server runs on http://localhost:5000 and serves the frontend (login at /login.html).
+
+## Environment Variables (.env)
+
+- SECRET_KEY, JWT_SECRET: signing keys
+- MONGO_URI, MONGO_DB_NAME: Mongo connection
+- GEMINI_API_KEY, GEMINI_MODEL: Gemini access
+- CORS_ORIGINS: comma-separated allowed origins
+- FLASK_DEBUG: true/false
+
+## Core Endpoints (prefixed with /api)
+
+- Auth: /auth/register, /auth/login, /auth/refresh, /auth/me
+- User: /user/profile, /profile-setup, /settings, /progress, /xp, /exam-progress, /interview-progress, /bookmark
+- Notes: /notes (CRUD with search/tag)
+- Questions: /questions (CRUD), /exams, /exams/{id}/results
+- Planner: /planner (CRUD), /planner/pomodoro
+- Leaderboard: /leaderboard, /friends, /races
+- AI: /ai/chat, /generate-questions, /hint, /explain, /study-plan, /solve, /interview-tips, /mock-interview
+- Health: /health
+
+## Frontend Pages
+
+Login, Profile Setup, Dashboard, Exams, Interview Prep, Question Bank, AI Tutor, Study Planner, Notes, Leaderboard, Analytics, Settings, Profile.
+
+## Production Notes
+
+- Keep secrets out of git; set env vars in hosting provider.
+- Set CORS_ORIGINS to your deployed domains.
+- Run with a WSGI server for production, e.g.:
+
+```
 cd backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate (Windows)
-venv\Scripts\activate
-# Activate (Mac/Linux)
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Configure Environment
-
-```bash
-# Copy example env and edit
-cp ../.env.example .env
-# Edit .env with your MongoDB URI, JWT secret, and Gemini API key
-```
-
-### 3. Start MongoDB
-
-```bash
-# If using local MongoDB
-mongod
-
-# Or use MongoDB Atlas — update MONGO_URI in .env
-```
-
-### 4. Run the Server
-
-```bash
-# Development
-python app.py
-
-# Production
 gunicorn app:app --bind 0.0.0.0:5000
 ```
-
-The app runs at **http://localhost:5000**
-
----
-
-## 📡 API Endpoints
-
-### Auth (`/api/auth`)
-
-| Method | Endpoint  | Description          |
-| ------ | --------- | -------------------- |
-| POST   | /register | Create new account   |
-| POST   | /login    | Login & get tokens   |
-| POST   | /refresh  | Refresh access token |
-| GET    | /me       | Get current user     |
-
-### User (`/api/user`)
-
-| Method | Endpoint            | Description               |
-| ------ | ------------------- | ------------------------- |
-| GET    | /profile            | Get user profile          |
-| PUT    | /profile            | Update profile fields     |
-| PUT    | /profile-setup      | Complete onboarding       |
-| PUT    | /settings           | Update settings           |
-| GET    | /progress           | Get XP, streak, activity  |
-| POST   | /xp                 | Add XP points             |
-| PUT    | /exam-progress      | Update exam progress      |
-| PUT    | /interview-progress | Update interview progress |
-| POST   | /answer-question    | Record question answer    |
-| POST   | /bookmark           | Toggle question bookmark  |
-
-### Exams (`/api/exams`)
-
-| Method | Endpoint     | Description         |
-| ------ | ------------ | ------------------- |
-| GET    | /            | List all exams      |
-| GET    | /:id         | Get exam details    |
-| POST   | /:id/results | Submit quiz results |
-
-### Questions (`/api/questions`)
-
-| Method | Endpoint | Description               |
-| ------ | -------- | ------------------------- |
-| GET    | /        | List (filter by category) |
-| POST   | /        | Create question           |
-| GET    | /:id     | Get single question       |
-| DELETE | /:id     | Delete question (owner)   |
-
-### Notes (`/api/notes`)
-
-| Method | Endpoint | Description      |
-| ------ | -------- | ---------------- |
-| GET    | /        | List with search |
-| POST   | /        | Create note      |
-| PUT    | /:id     | Update note      |
-| DELETE | /:id     | Delete note      |
-
-### Planner (`/api/planner`)
-
-| Method | Endpoint  | Description             |
-| ------ | --------- | ----------------------- |
-| GET    | /         | List tasks (by date)    |
-| POST   | /         | Create task             |
-| PUT    | /:id      | Update / toggle task    |
-| DELETE | /:id      | Delete task             |
-| POST   | /pomodoro | Record pomodoro (+15XP) |
-
-### Leaderboard (`/api/leaderboard`)
-
-| Method | Endpoint        | Description         |
-| ------ | --------------- | ------------------- |
-| GET    | /               | Get rankings        |
-| GET    | /friends        | List friends        |
-| POST   | /friends        | Add friend by email |
-| DELETE | /friends/:id    | Remove friend       |
-| GET    | /races          | List races          |
-| POST   | /races          | Create race         |
-| GET    | /races/:id      | Race details        |
-| POST   | /races/:id/join | Join a race         |
-
-### AI (`/api/ai`)
-
-| Method | Endpoint            | Description                |
-| ------ | ------------------- | -------------------------- |
-| POST   | /chat               | Free-form AI chat          |
-| POST   | /generate-questions | Generate MCQ questions     |
-| POST   | /hint               | Get hint for a question    |
-| POST   | /explain            | Explain a concept          |
-| POST   | /study-plan         | Generate study plan        |
-| POST   | /solve              | Solve problem step-by-step |
-| POST   | /interview-tips     | Get interview tips         |
-| POST   | /mock-interview     | Mock interview questions   |
-
----
-
-## 📱 Pages
-
-1. **Login** — Email/password auth with JWT
-2. **Profile Setup** — 4-step onboarding wizard
-3. **Dashboard** — XP, streak, activity overview
-4. **Exams** — Browse & practice exam categories
-5. **Interview Prep** — Company-wise interview prep
-6. **Question Bank** — Searchable questions + bookmarks
-7. **AI Tutor** — Gemini-powered study assistant
-8. **Study Planner** — Tasks + Pomodoro timer
-9. **Notes** — Create & organize study notes
-10. **Leaderboard** — Rankings + friend races
-11. **Analytics** — Study progress charts
-12. **Settings** — Theme, API key, preferences
-13. **Profile** — View/edit profile
-
----
-
-## 🌐 Deployment (Free Tier)
-
-### Render
-
-1. Push to GitHub
-2. Create Web Service on [render.com](https://render.com)
-3. Build command: `pip install -r backend/requirements.txt`
-4. Start command: `cd backend && gunicorn app:app`
-5. Add environment variables in Render dashboard
-
-### MongoDB Atlas
-
-1. Create free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
-2. Get connection string and add to `MONGO_URI`
-
----
-
-## 📄 License
-
-MIT — Built for Indian engineering students 🇮🇳
-#   L e a r n i n g - P l a t f o r m  
- 
