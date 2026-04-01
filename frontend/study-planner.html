@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Study Planner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .planner-hero {
+        padding: 24px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #10b981, #0ea5e9);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .planner-hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -8%;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .planner-hero h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+      .planner-hero p {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .planner-top {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .date-nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .date-nav button {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--surface2);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        border: 1px solid var(--border);
+      }
+      .date-nav button:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .date-display {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        min-width: 200px;
+        text-align: center;
+      }
+
+      .week-view {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 6px;
+        margin-bottom: 24px;
+      }
+      @media (max-width: 600px) {
+        .week-view {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .week-day {
+        padding: 12px 8px;
+        border-radius: 12px;
+        text-align: center;
+        background: var(--card-bg);
+        border: 1.5px solid var(--card-border);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .week-day:hover {
+        border-color: var(--accent);
+      }
+      .week-day.today {
+        border-color: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
+      }
+      .week-day.selected {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .week-day.has-tasks::after {
+        content: "";
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin: 4px auto 0;
+      }
+      .week-day.selected.has-tasks::after {
+        background: #fff;
+      }
+      .wd-name {
+        font-size: 0.7rem;
+        color: var(--text3);
+        margin-bottom: 2px;
+      }
+      .week-day.selected .wd-name {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      .wd-num {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .planner-grid {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 18px;
+      }
+      @media (max-width: 900px) {
+        .planner-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tasks-card {
+        padding: 22px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .tasks-card h3 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: space-between;
+      }
+
+      .add-task-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .add-task-input {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.88rem;
+        outline: none;
+      }
+      .add-task-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .add-task-select {
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.82rem;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .task-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: var(--surface);
+        transition: all 0.15s;
+      }
+      .task-item:hover {
+        background: var(--surface2);
+      }
+      .task-check {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+      .task-check:hover {
+        border-color: var(--accent);
+      }
+      .task-check.done {
+        background: var(--success);
+        border-color: var(--success);
+      }
+      .task-check.done::after {
+        content: "✓";
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+      .task-text {
+        flex: 1;
+        font-size: 0.88rem;
+      }
+      .task-text.done {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+      .task-cat {
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text3);
+        white-space: nowrap;
+      }
+      .task-dur {
+        font-size: 0.75rem;
+        color: var(--text3);
+        white-space: nowrap;
+      }
+      .task-del {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.7rem;
+        background: none;
+        color: var(--text3);
+        flex-shrink: 0;
+      }
+      .task-del:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+      .task-empty {
+        text-align: center;
+        padding: 30px;
+        color: var(--text3);
+        font-size: 0.88rem;
+      }
+
+      .side-card {
+        padding: 20px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        margin-bottom: 14px;
+      }
+      .side-card h4 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .progress-ring {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 10px;
+      }
+      .ring-num {
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: "Syne", sans-serif;
+        color: var(--accent);
+      }
+      .ring-label {
+        font-size: 0.8rem;
+        color: var(--text3);
+      }
+      .ai-plan-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.88rem;
+        background: var(--gradient1);
+        color: #fff;
+        transition: all 0.2s;
+      }
+      .ai-plan-btn:hover {
+        opacity: 0.9;
+      }
+
+      .timer-display {
+        text-align: center;
+        margin: 16px 0;
+      }
+      .timer-num {
+        font-size: 2.4rem;
+        font-weight: 800;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--accent);
+      }
+      .timer-label {
+        font-size: 0.78rem;
+        color: var(--text3);
+      }
+      .timer-btns {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      .timer-btn {
+        padding: 8px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.82rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Study Planner</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="planner-hero">
+          <h1>📅 Study Planner</h1>
+          <p>
+            Plan your daily study schedule. Stay consistent, track tasks, and
+            reach your goals.
+          </p>
+        </div>
+
+        <!-- Date nav -->
+        <div class="planner-top">
+          <div class="date-nav">
+            <button onclick="changeWeek(-1)">◀</button>
+            <div class="date-display" id="dateDisplay"></div>
+            <button onclick="changeWeek(1)">▶</button>
+          </div>
+          <button class="lp-btn lp-btn-secondary lp-btn-sm" onclick="goToday()">
+            Today
+          </button>
+        </div>
+
+        <div class="week-view" id="weekView"></div>
+
+        <div class="planner-grid">
+          <!-- Tasks -->
+          <div class="tasks-card">
+            <h3>
+              <span>📋 Tasks for <span id="selectedDateLabel"></span></span
+              ><span
+                id="taskCountLabel"
+                style="
+                  font-size: 0.78rem;
+                  color: var(--text3);
+                  font-weight: 400;
+                "
+              ></span>
+            </h3>
+            <div class="add-task-row">
+              <input
+                type="text"
+                class="add-task-input"
+                id="newTaskInput"
+                placeholder="Add a new task…"
+                onkeydown="if (event.key === 'Enter') addTask();"
+              />
+              <select class="add-task-select" id="newTaskCategory">
+                <option value="study">📖 Study</option>
+                <option value="practice">🔢 Practice</option>
+                <option value="coding">💻 Coding</option>
+                <option value="revision">🔄 Revision</option>
+                <option value="mock">📝 Mock Test</option>
+                <option value="other">📌 Other</option>
+              </select>
+              <button
+                class="lp-btn lp-btn-primary lp-btn-sm"
+                onclick="addTask()"
+              >
+                Add
+              </button>
+            </div>
+            <div class="task-list" id="taskList"></div>
+          </div>
+
+          <!-- Sidebar -->
+          <div>
+            <!-- Progress -->
+            <div class="side-card">
+              <h4>📊 Today's Progress</h4>
+              <div class="progress-ring">
+                <div>
+                  <div class="ring-num" id="completedCount">0</div>
+                  <div class="ring-label">completed</div>
+                </div>
+                <div style="font-size: 1.4rem; color: var(--text3)">/</div>
+                <div>
+                  <div
+                    class="ring-num"
+                    id="totalCount"
+                    style="color: var(--text2)"
+                  >
+                    0
+                  </div>
+                  <div class="ring-label">total tasks</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pomodoro Timer -->
+            <div class="side-card">
+              <h4>⏱️ Focus Timer</h4>
+              <div class="timer-display">
+                <div class="timer-num" id="timerDisplay">25:00</div>
+                <div class="timer-label" id="timerLabel">
+                  Pomodoro — 25 min focus
+                </div>
+              </div>
+              <div class="timer-btns">
+                <button
+                  class="timer-btn lp-btn lp-btn-primary lp-btn-sm"
+                  id="timerStartBtn"
+                  onclick="toggleTimer()"
+                >
+                  ▶ Start
+                </button>
+                <button
+                  class="timer-btn lp-btn lp-btn-secondary lp-btn-sm"
+                  onclick="resetTimer()"
+                >
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+
+            <!-- AI Plan -->
+            <div class="side-card">
+              <h4>🤖 AI Study Plan</h4>
+              <p
+                style="
+                  font-size: 0.82rem;
+                  color: var(--text3);
+                  margin-bottom: 12px;
+                "
+              >
+                Let AI generate a personalized study plan based on your exams
+                and schedule.
+              </p>
+              <button class="ai-plan-btn" onclick="generateAIPlan()">
+                Generate AI Plan ✨
+              </button>
+              <div id="aiPlanResult" style="margin-top: 12px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("planner");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      let currentWeekStart = getWeekStart(new Date());
+      let selectedDate = new Date().toISOString().split("T")[0];
+
+      function getWeekStart(d) {
+        const dt = new Date(d);
+        const day = dt.getDay();
+        dt.setDate(dt.getDate() - (day === 0 ? 6 : day - 1)); // Monday start
+        return dt;
+      }
+
+      function formatDate(d) {
+        return new Date(d).toLocaleDateString("en-IN", {
+          weekday: "short",
+          day: "numeric",
+          month: "short",
+        });
+      }
+
+      function renderWeekView() {
+        const wv = document.getElementById("weekView");
+        wv.innerHTML = "";
+        const today = new Date().toISOString().split("T")[0];
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+        for (let i = 0; i < 7; i++) {
+          const dt = new Date(currentWeekStart);
+          dt.setDate(dt.getDate() + i);
+          const key = dt.toISOString().split("T")[0];
+          const tasks = state.studyPlan?.[key] || [];
+          const isToday = key === today;
+          const isSelected = key === selectedDate;
+
+          const el = document.createElement("div");
+          el.className =
+            "week-day" +
+            (isToday ? " today" : "") +
+            (isSelected ? " selected" : "") +
+            (tasks.length ? " has-tasks" : "");
+          el.innerHTML = `<div class="wd-name">${days[i]}</div><div class="wd-num">${dt.getDate()}</div>`;
+          el.onclick = () => {
+            selectedDate = key;
+            renderWeekView();
+            renderTasks();
+          };
+          wv.appendChild(el);
+        }
+
+        const month = new Date(currentWeekStart).toLocaleDateString("en-IN", {
+          month: "long",
+          year: "numeric",
+        });
+        document.getElementById("dateDisplay").textContent = month;
+      }
+
+      function changeWeek(dir) {
+        currentWeekStart.setDate(currentWeekStart.getDate() + dir * 7);
+        renderWeekView();
+      }
+
+      function goToday() {
+        currentWeekStart = getWeekStart(new Date());
+        selectedDate = new Date().toISOString().split("T")[0];
+        renderWeekView();
+        renderTasks();
+      }
+
+      function renderTasks() {
+        const tasks = state.studyPlan?.[selectedDate] || [];
+        const list = document.getElementById("taskList");
+        document.getElementById("selectedDateLabel").textContent =
+          formatDate(selectedDate);
+        const done = tasks.filter((t) => t.done).length;
+        document.getElementById("taskCountLabel").textContent =
+          `${done}/${tasks.length} done`;
+        document.getElementById("completedCount").textContent = done;
+        document.getElementById("totalCount").textContent = tasks.length;
+
+        if (!tasks.length) {
+          list.innerHTML =
+            '<div class="task-empty">No tasks for this day. Add one above! 📝</div>';
+          return;
+        }
+
+        list.innerHTML = tasks
+          .map(
+            (t, i) => `
+        <div class="task-item">
+          <div class="task-check ${t.done ? "done" : ""}" onclick="toggleTask(${i})"></div>
+          <div class="task-text ${t.done ? "done" : ""}">${t.task}</div>
+          <span class="task-cat">${t.category || "study"}</span>
+          <button class="task-del" onclick="deleteTask(${i})">✕</button>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      function addTask() {
+        const input = document.getElementById("newTaskInput");
+        const task = input.value.trim();
+        if (!task) return;
+        const category = document.getElementById("newTaskCategory").value;
+        if (!state.studyPlan) state.studyPlan = {};
+        if (!state.studyPlan[selectedDate]) state.studyPlan[selectedDate] = [];
+        state.studyPlan[selectedDate].push({ task, category, done: false });
+        saveState();
+        input.value = "";
+        renderTasks();
+        renderWeekView();
+      }
+
+      function toggleTask(idx) {
+        const tasks = state.studyPlan?.[selectedDate];
+        if (!tasks || !tasks[idx]) return;
+        tasks[idx].done = !tasks[idx].done;
+        if (tasks[idx].done) addXP(5, "planner-task");
+        saveState();
+        renderTasks();
+        document.getElementById("topXp").textContent = state.xp || 0;
+      }
+
+      function deleteTask(idx) {
+        const tasks = state.studyPlan?.[selectedDate];
+        if (!tasks) return;
+        tasks.splice(idx, 1);
+        saveState();
+        renderTasks();
+        renderWeekView();
+      }
+
+      // Pomodoro Timer
+      let timerInterval = null;
+      let timerSeconds = 25 * 60;
+      let timerRunning = false;
+
+      function updateTimerDisplay() {
+        const m = Math.floor(timerSeconds / 60),
+          s = timerSeconds % 60;
+        document.getElementById("timerDisplay").textContent =
+          `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+      }
+
+      function toggleTimer() {
+        if (timerRunning) {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          document.getElementById("timerStartBtn").textContent = "▶ Start";
+        } else {
+          timerRunning = true;
+          document.getElementById("timerStartBtn").textContent = "⏸ Pause";
+          timerInterval = setInterval(() => {
+            timerSeconds--;
+            if (timerSeconds <= 0) {
+              clearInterval(timerInterval);
+              timerRunning = false;
+              document.getElementById("timerStartBtn").textContent = "▶ Start";
+              state.studyMinutes = (state.studyMinutes || 0) + 25;
+              state.pomodorosTotal = (state.pomodorosTotal || 0) + 1;
+              addXP(15, "pomodoro");
+              saveState();
+              document.getElementById("topXp").textContent = state.xp || 0;
+              lpToast("Pomodoro complete! +15 XP 🎉 Take a 5-min break.");
+              timerSeconds = 25 * 60;
+            }
+            updateTimerDisplay();
+          }, 1000);
+        }
+      }
+
+      function resetTimer() {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        timerSeconds = 25 * 60;
+        updateTimerDisplay();
+        document.getElementById("timerStartBtn").textContent = "▶ Start";
+      }
+
+      // AI Plan Generation
+      async function generateAIPlan() {
+        if (!isGeminiConfigured()) {
+          lpToast("Add Gemini API key in Settings!");
+          return;
+        }
+        const result = document.getElementById("aiPlanResult");
+        result.innerHTML =
+          '<div style="font-size:.85rem;color:var(--text3)">Generating plan… ⏳</div>';
+
+        try {
+          const exams =
+            (state.targetExams || []).join(", ") || "general preparation";
+          const hours = state.dailyHours || 2;
+          const plan = await aiGenerateStudyPlan(
+            exams,
+            30,
+            hours,
+            state.targetExams || ["general"],
+          );
+          result.innerHTML = `<div style="font-size:.82rem;color:var(--text2);line-height:1.7;padding:12px;border-radius:10px;background:var(--surface)">${typeof plan === "string" ? plan.replace(/\n/g, "<br>") : JSON.stringify(plan)}</div>`;
+        } catch (e) {
+          result.innerHTML =
+            '<div style="font-size:.82rem;color:var(--danger)">Failed to generate plan. Try again.</div>';
+        }
+      }
+
+      // Init
+      renderWeekView();
+      renderTasks();
+      updateTimerDisplay();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Settings</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .settings-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 680px;
+      }
+      .s-card {
+        padding: 24px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .s-card h3 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .s-card p {
+        font-size: 0.82rem;
+        color: var(--text3);
+        margin-bottom: 16px;
+      }
+
+      .s-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .s-row:last-child {
+        border-bottom: none;
+      }
+      .s-row-info {
+        flex: 1;
+      }
+      .s-row-label {
+        font-weight: 600;
+        font-size: 0.88rem;
+      }
+      .s-row-desc {
+        font-size: 0.78rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+      .s-row-action {
+        flex-shrink: 0;
+        margin-left: 16px;
+      }
+
+      /* Custom toggle switch */
+      .toggle {
+        position: relative;
+        width: 46px;
+        height: 24px;
+        cursor: pointer;
+      }
+      .toggle input {
+        display: none;
+      }
+      .toggle-track {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        background: var(--surface2);
+        transition: background 0.2s;
+      }
+      .toggle input:checked + .toggle-track {
+        background: var(--accent);
+      }
+      .toggle-thumb {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        transition: transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .toggle input:checked ~ .toggle-thumb {
+        transform: translateX(22px);
+      }
+
+      /* Input fields */
+      .s-input {
+        width: 100%;
+        max-width: 400px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.88rem;
+        outline: none;
+        font-family: "DM Sans", sans-serif;
+      }
+      .s-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .s-input-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      /* Theme selector */
+      .theme-options {
+        display: flex;
+        gap: 12px;
+      }
+      .theme-option {
+        width: 80px;
+        padding: 14px;
+        border-radius: 14px;
+        text-align: center;
+        cursor: pointer;
+        border: 2px solid var(--border);
+        transition: all 0.2s;
+      }
+      .theme-option.active {
+        border-color: var(--accent);
+        background: var(--surface2);
+      }
+      .theme-option:hover:not(.active) {
+        border-color: var(--text3);
+      }
+      .theme-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+      .theme-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text2);
+      }
+
+      /* API key display */
+      .api-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        margin-bottom: 10px;
+      }
+      .api-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .api-ok {
+        background: #10b981;
+      }
+      .api-no {
+        background: #ef4444;
+      }
+
+      /* Data section */
+      .data-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      /* Danger zone */
+      .danger-zone {
+        border-color: rgba(239, 68, 68, 0.3) !important;
+      }
+      .danger-zone h3 {
+        color: #ef4444;
+      }
+
+      .s-select {
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      @media (max-width: 600px) {
+        .s-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+        .s-row-action {
+          margin-left: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Settings</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="settings-grid">
+          <!-- Appearance -->
+          <div class="s-card">
+            <h3>🎨 Appearance</h3>
+            <p>Customize the look and feel of LearnPath</p>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Theme</div>
+                <div class="s-row-desc">Choose between dark & light mode</div>
+              </div>
+              <div class="s-row-action">
+                <div class="theme-options">
+                  <div
+                    class="theme-option"
+                    data-theme-opt="dark"
+                    onclick="setTheme('dark')"
+                  >
+                    <div class="theme-icon">🌙</div>
+                    <div class="theme-label">Dark</div>
+                  </div>
+                  <div
+                    class="theme-option"
+                    data-theme-opt="light"
+                    onclick="setTheme('light')"
+                  >
+                    <div class="theme-icon">☀️</div>
+                    <div class="theme-label">Light</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Configuration -->
+          <div class="s-card">
+            <h3>🤖 AI Configuration</h3>
+            <p>Configure your Gemini API key for AI-powered features</p>
+            <div class="api-status" id="apiStatus">
+              <div class="api-dot api-no"></div>
+              <span>Not configured</span>
+            </div>
+            <div class="s-input-row">
+              <input
+                type="password"
+                class="s-input"
+                id="apiKeyInput"
+                placeholder="Enter your Gemini API key…"
+                style="flex: 1"
+              />
+              <button
+                class="lp-btn lp-btn-primary lp-btn-sm"
+                onclick="saveApiKey()"
+              >
+                Save
+              </button>
+              <button
+                class="lp-btn lp-btn-secondary lp-btn-sm"
+                onclick="toggleKeyVisibility()"
+              >
+                👁
+              </button>
+            </div>
+            <div
+              style="margin-top: 10px; font-size: 0.78rem; color: var(--text3)"
+            >
+              Get your free API key from
+              <a
+                href="https://aistudio.google.com/apikey"
+                target="_blank"
+                style="color: var(--accent)"
+                >Google AI Studio</a
+              >. Used for AI Tutor, question generation, study plans & interview
+              prep.
+            </div>
+          </div>
+
+          <!-- Study Preferences -->
+          <div class="s-card">
+            <h3>📚 Study Preferences</h3>
+            <p>Adjust your study settings</p>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Daily Study Goal</div>
+                <div class="s-row-desc">
+                  How many hours per day do you plan to study?
+                </div>
+              </div>
+              <div class="s-row-action">
+                <select
+                  class="s-select"
+                  id="dailyHoursSelect"
+                  onchange="updateDailyHours()"
+                >
+                  <option value="1">1 hour</option>
+                  <option value="2">2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="5">5 hours</option>
+                  <option value="6">6 hours</option>
+                  <option value="8">8 hours</option>
+                  <option value="10">10 hours</option>
+                </select>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Pomodoro Duration</div>
+                <div class="s-row-desc">
+                  Length of each focus session (default 25 min)
+                </div>
+              </div>
+              <div class="s-row-action">
+                <select
+                  class="s-select"
+                  id="pomodoroSelect"
+                  onchange="updatePomodoro()"
+                >
+                  <option value="15">15 min</option>
+                  <option value="25">25 min</option>
+                  <option value="30">30 min</option>
+                  <option value="45">45 min</option>
+                  <option value="60">60 min</option>
+                </select>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Difficulty Level</div>
+                <div class="s-row-desc">Preferred question difficulty</div>
+              </div>
+              <div class="s-row-action">
+                <select
+                  class="s-select"
+                  id="levelSelect"
+                  onchange="updateLevel()"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div class="s-card">
+            <h3>🔔 Notifications</h3>
+            <p>Manage notification preferences</p>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Study Reminders</div>
+                <div class="s-row-desc">
+                  Get reminded to study at your preferred time
+                </div>
+              </div>
+              <div class="s-row-action">
+                <label class="toggle">
+                  <input
+                    type="checkbox"
+                    id="reminderToggle"
+                    onchange="updateSetting('reminders', this.checked)"
+                  />
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Sound Effects</div>
+                <div class="s-row-desc">
+                  Play sounds for XP gains, timer, etc.
+                </div>
+              </div>
+              <div class="s-row-action">
+                <label class="toggle">
+                  <input
+                    type="checkbox"
+                    id="soundToggle"
+                    onchange="updateSetting('sounds', this.checked)"
+                  />
+                  <div class="toggle-track"></div>
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Management -->
+          <div class="s-card">
+            <h3>💾 Data Management</h3>
+            <p>Export, import, or sync your study data</p>
+            <div class="data-actions">
+              <button
+                class="lp-btn lp-btn-secondary lp-btn-sm"
+                onclick="exportData()"
+              >
+                📤 Export Data
+              </button>
+              <button
+                class="lp-btn lp-btn-secondary lp-btn-sm"
+                onclick="document.getElementById('importFile').click()"
+              >
+                📥 Import Data
+              </button>
+              <input
+                type="file"
+                id="importFile"
+                accept=".json"
+                style="display: none"
+                onchange="importData(event)"
+              />
+            </div>
+            <div
+              style="margin-top: 10px; font-size: 0.78rem; color: var(--text3)"
+            >
+              Export your progress as JSON to back up or transfer to another
+              device.
+            </div>
+          </div>
+
+          <!-- Account -->
+          <div class="s-card">
+            <h3>👤 Account</h3>
+            <p>Manage your account settings</p>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Name</div>
+                <div class="s-row-desc" id="acctName">—</div>
+              </div>
+              <div class="s-row-action">
+                <button
+                  class="lp-btn lp-btn-secondary lp-btn-sm"
+                  onclick="location.href = 'profile.html'"
+                >
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Email</div>
+                <div class="s-row-desc" id="acctEmail">—</div>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Member Since</div>
+                <div class="s-row-desc" id="acctJoined">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="s-card danger-zone">
+            <h3>⚠️ Danger Zone</h3>
+            <p>Irreversible actions — proceed with caution</p>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Reset Progress</div>
+                <div class="s-row-desc">
+                  Clear all XP, streak, quiz results, and study progress
+                </div>
+              </div>
+              <div class="s-row-action">
+                <button
+                  class="lp-btn lp-btn-sm"
+                  style="
+                    background: rgba(239, 68, 68, 0.15);
+                    color: #ef4444;
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                  "
+                  onclick="resetProgress()"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+            <div class="s-row">
+              <div class="s-row-info">
+                <div class="s-row-label">Delete All Data</div>
+                <div class="s-row-desc">
+                  Remove all data including profile, notes, and settings
+                </div>
+              </div>
+              <div class="s-row-action">
+                <button
+                  class="lp-btn lp-btn-sm"
+                  style="
+                    background: rgba(239, 68, 68, 0.15);
+                    color: #ef4444;
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                  "
+                  onclick="deleteAllData()"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("settings");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      // ── Init form values ─────────────────────────────
+      (function init() {
+        // Theme selector
+        const currentTheme = state.theme || "dark";
+        document.querySelectorAll(".theme-option").forEach((el) => {
+          el.classList.toggle("active", el.dataset.themeOpt === currentTheme);
+        });
+
+        // API key
+        const apiKey = state.geminiApiKey || "";
+        document.getElementById("apiKeyInput").value = apiKey;
+        updateApiStatus(apiKey);
+
+        // Study prefs
+        document.getElementById("dailyHoursSelect").value =
+          state.dailyHours || 1;
+        document.getElementById("pomodoroSelect").value =
+          state.pomodoroDuration || 25;
+        document.getElementById("levelSelect").value =
+          state.level || "beginner";
+
+        // Toggles
+        document.getElementById("reminderToggle").checked =
+          state.reminders !== false;
+        document.getElementById("soundToggle").checked = state.sounds !== false;
+
+        // Account info
+        document.getElementById("acctName").textContent =
+          state.name || "Not set";
+        document.getElementById("acctEmail").textContent =
+          state.email || "Not set";
+        document.getElementById("acctJoined").textContent =
+          state.joinDate || "Unknown";
+      })();
+
+      // ── Theme ────────────────────────────────────────
+      function setTheme(theme) {
+        state.theme = theme;
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("lp_theme", theme);
+        saveState();
+        document.querySelectorAll(".theme-option").forEach((el) => {
+          el.classList.toggle("active", el.dataset.themeOpt === theme);
+        });
+        // Update theme toggle button
+        const btn = document.getElementById("themeToggleBtn");
+        if (btn) btn.textContent = theme === "dark" ? "☀️" : "🌙";
+      }
+
+      // ── API Key ──────────────────────────────────────
+      function saveApiKey() {
+        const key = document.getElementById("apiKeyInput").value.trim();
+        state.geminiApiKey = key;
+        saveState();
+        updateApiStatus(key);
+        lpToast(key ? "API key saved! ✅" : "API key cleared");
+      }
+
+      function updateApiStatus(key) {
+        const el = document.getElementById("apiStatus");
+        if (key) {
+          el.innerHTML =
+            '<div class="api-dot api-ok"></div><span style="color:#10b981">Configured ✓</span>';
+        } else {
+          el.innerHTML =
+            '<div class="api-dot api-no"></div><span>Not configured</span>';
+        }
+      }
+
+      function toggleKeyVisibility() {
+        const input = document.getElementById("apiKeyInput");
+        input.type = input.type === "password" ? "text" : "password";
+      }
+
+      // ── Study Preferences ────────────────────────────
+      function updateDailyHours() {
+        state.dailyHours = parseInt(
+          document.getElementById("dailyHoursSelect").value,
+        );
+        saveState();
+        lpToast("Study goal updated!");
+      }
+
+      function updatePomodoro() {
+        state.pomodoroDuration = parseInt(
+          document.getElementById("pomodoroSelect").value,
+        );
+        saveState();
+        lpToast("Pomodoro duration updated!");
+      }
+
+      function updateLevel() {
+        state.level = document.getElementById("levelSelect").value;
+        saveState();
+        lpToast("Difficulty updated!");
+      }
+
+      function updateSetting(key, value) {
+        state[key] = value;
+        saveState();
+      }
+
+      // ── Data Management ──────────────────────────────
+      function exportData() {
+        const json = JSON.stringify(state, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `learnpath-backup-${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        lpToast("Data exported! 📤");
+      }
+
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (!imported.name && !imported.xp && !imported.email) {
+              lpToast("Invalid backup file!");
+              return;
+            }
+            if (!confirm("This will replace all your current data. Continue?"))
+              return;
+            state = { ...defaultState(), ...imported };
+            saveState();
+            lpToast("Data imported! Refreshing… ✅");
+            setTimeout(() => location.reload(), 1000);
+          } catch (err) {
+            lpToast("Error reading file!");
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      // ── Danger Zone ──────────────────────────────────
+      function resetProgress() {
+        if (
+          !confirm(
+            "Reset all progress? This will clear XP, streak, quiz results, and study data.\n\nYour profile and notes will be kept.",
+          )
+        )
+          return;
+        state.xp = 0;
+        state.streak = 0;
+        state.lastStudyDate = null;
+        state.badges = [];
+        state.completedTopics = {};
+        state.quizResults = {};
+        state.studyMinutes = 0;
+        state.pomodorosTotal = 0;
+        state.activityLog = {};
+        state.examProgress = {};
+        state.interviewProgress = {};
+        state.answeredQuestions = {};
+        state.bookmarkedQuestions = [];
+        state.studyPlan = {};
+        saveState();
+        document.getElementById("topXp").textContent = 0;
+        lpToast("Progress reset! 🔄");
+      }
+
+      function deleteAllData() {
+        if (
+          !confirm(
+            "DELETE ALL DATA?\n\nThis will remove everything — profile, progress, notes, settings.\n\nThis action CANNOT be undone!",
+          )
+        )
+          return;
+        if (
+          !confirm(
+            "Are you REALLY sure? Type 'delete' in the next prompt to confirm.",
+          )
+        )
+          return;
+        const check = prompt("Type 'delete' to confirm:");
+        if (check !== "delete") {
+          lpToast("Cancelled");
+          return;
+        }
+        localStorage.removeItem("learnpath_state");
+        localStorage.removeItem("lp_theme");
+        localStorage.removeItem("lp_demo_user");
+        localStorage.removeItem("lp_custom_questions");
+        location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

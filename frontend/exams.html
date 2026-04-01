@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Exam Preparation</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .exam-hero {
+        padding: 28px;
+        border-radius: 20px;
+        background: var(--gradient1);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .exam-hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -8%;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .exam-hero h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+      .exam-hero p {
+        font-size: 0.88rem;
+        opacity: 0.85;
+        position: relative;
+        z-index: 1;
+        margin-top: 4px;
+      }
+
+      .exam-filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .ef-btn {
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .ef-btn:hover {
+        border-color: var(--accent);
+      }
+      .ef-btn.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .exam-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 16px;
+        margin-bottom: 30px;
+      }
+      .exam-card {
+        padding: 22px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .exam-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px var(--accent-glow);
+        border-color: var(--accent);
+      }
+      .exam-card-color {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+      }
+      .ec-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .ec-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        background: var(--surface2);
+      }
+      .ec-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+      .ec-company {
+        font-size: 0.78rem;
+        color: var(--text3);
+      }
+      .ec-desc {
+        font-size: 0.83rem;
+        color: var(--text2);
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
+      .ec-meta {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .ec-meta-item {
+        font-size: 0.75rem;
+        color: var(--text3);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .ec-sections {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .ec-section-tag {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: var(--surface);
+        color: var(--text2);
+      }
+      .ec-progress {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+      }
+      .ec-progress-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--surface3);
+        overflow: hidden;
+      }
+      .ec-progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--gradient1);
+        transition: width 0.5s;
+      }
+      .ec-progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.72rem;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+
+      /* Exam detail view */
+      .exam-detail {
+        display: none;
+      }
+      .exam-detail.active {
+        display: block;
+      }
+      .ed-back {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--accent);
+        cursor: pointer;
+        margin-bottom: 20px;
+        padding: 6px 0;
+      }
+      .ed-back:hover {
+        text-decoration: underline;
+      }
+      .ed-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .ed-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        background: var(--surface2);
+      }
+      .ed-info h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+      }
+      .ed-info p {
+        font-size: 0.85rem;
+        color: var(--text3);
+      }
+
+      .section-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .section-card {
+        padding: 20px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .section-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+      .sc-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .sc-icon {
+        font-size: 1.4rem;
+      }
+      .sc-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .sc-meta {
+        font-size: 0.78rem;
+        color: var(--text3);
+        margin-bottom: 10px;
+      }
+      .sc-topics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .sc-topic {
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.68rem;
+        background: var(--surface);
+        color: var(--text3);
+      }
+
+      /* Quiz modal */
+      .quiz-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .quiz-overlay.active {
+        display: flex;
+      }
+      .quiz-modal {
+        width: 100%;
+        max-width: 680px;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 32px;
+      }
+      .quiz-close {
+        float: right;
+        background: var(--surface2);
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+      .quiz-close:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+      .quiz-q-num {
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .quiz-q-text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .quiz-opt {
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .quiz-opt:hover {
+        border-color: var(--accent);
+        background: var(--surface2);
+      }
+      .quiz-opt.selected {
+        border-color: var(--accent);
+        background: rgba(124, 58, 237, 0.1);
+      }
+      .quiz-opt.correct {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.1);
+      }
+      .quiz-opt.wrong {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.1);
+      }
+      .quiz-opt-letter {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        background: var(--surface2);
+        flex-shrink: 0;
+      }
+      .quiz-explanation {
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--surface);
+        border-left: 3px solid var(--accent);
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        display: none;
+      }
+      .quiz-nav {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+      }
+      .quiz-nav button {
+        padding: 10px 24px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .quiz-timer {
+        text-align: center;
+        margin-bottom: 16px;
+        font-size: 0.9rem;
+        color: var(--accent);
+        font-weight: 700;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .quiz-progress {
+        height: 4px;
+        border-radius: 2px;
+        background: var(--surface3);
+        margin-bottom: 20px;
+      }
+      .quiz-progress-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--gradient1);
+        transition: width 0.3s;
+      }
+
+      .quiz-results {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .qr-score {
+        font-size: 3rem;
+        font-weight: 800;
+        font-family: "Syne", sans-serif;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+      .qr-label {
+        font-size: 0.9rem;
+        color: var(--text3);
+        margin-bottom: 20px;
+      }
+      .qr-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .qr-stat {
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .qr-stat-num {
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+      .qr-stat-lbl {
+        font-size: 0.72rem;
+        color: var(--text3);
+      }
+
+      .loading-ai {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px;
+        font-size: 0.9rem;
+        color: var(--text2);
+      }
+      .loading-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: ldot 0.6s infinite alternate;
+      }
+      .loading-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .loading-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes ldot {
+        to {
+          opacity: 0.2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2 class="topbar-title">Exam Preparation</h2>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <!-- LIST VIEW -->
+        <div id="examListView">
+          <div class="exam-hero">
+            <h1>📝 Choose Your Exam</h1>
+            <p>
+              Select an exam to start practicing. AI-generated questions
+              tailored to each pattern.
+            </p>
+          </div>
+
+          <div class="exam-filters" id="examFilters">
+            <button class="ef-btn active" onclick="filterExams('all', this)">
+              All
+            </button>
+            <button class="ef-btn" onclick="filterExams('placement', this)">
+              IT Placements
+            </button>
+            <button class="ef-btn" onclick="filterExams('gate', this)">
+              GATE
+            </button>
+            <button class="ef-btn" onclick="filterExams('coding', this)">
+              Coding/DSA
+            </button>
+          </div>
+
+          <div class="exam-grid" id="examGrid"></div>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div class="exam-detail" id="examDetailView">
+          <div class="ed-back" onclick="showExamList()">← Back to Exams</div>
+          <div class="ed-header">
+            <div class="ed-icon" id="edIcon"></div>
+            <div class="ed-info">
+              <h2 id="edTitle"></h2>
+              <p id="edSub"></p>
+            </div>
+          </div>
+          <div class="section-cards" id="sectionCards"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div class="quiz-overlay" id="quizOverlay">
+      <div class="quiz-modal" id="quizModal"></div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/data/exams-data.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("exams");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      // Render exam cards
+      function renderExamCards(filter) {
+        const grid = document.getElementById("examGrid");
+        grid.innerHTML = "";
+        Object.entries(EXAM_CATEGORIES).forEach(([id, exam]) => {
+          if (filter && filter !== "all") {
+            if (filter === "placement" && exam.type !== "placement") return;
+            if (filter === "gate" && !id.includes("gate")) return;
+            if (filter === "coding" && !id.includes("dsa")) return;
+          }
+          const prog = state.examProgress?.[id];
+          const pct = prog
+            ? Math.round(
+                ((prog.completed || 0) / (prog.total || exam.totalQuestions)) *
+                  100,
+              )
+            : 0;
+
+          const card = document.createElement("div");
+          card.className = "exam-card";
+          card.onclick = () => showExamDetail(id);
+          card.innerHTML = `
+          <div class="exam-card-color" style="background:${exam.color}"></div>
+          <div class="ec-header">
+            <div class="ec-icon">${exam.icon}</div>
+            <div><div class="ec-title">${exam.name}</div><div class="ec-company">${exam.company}</div></div>
+          </div>
+          <div class="ec-desc">${exam.description}</div>
+          <div class="ec-meta">
+            <div class="ec-meta-item">⏱️ ${exam.duration}</div>
+            <div class="ec-meta-item">📝 ${exam.totalQuestions} questions</div>
+            <div class="ec-meta-item">📊 ${exam.sections.length} sections</div>
+          </div>
+          <div class="ec-sections">${exam.sections.map((s) => `<span class="ec-section-tag">${s.icon} ${s.name}</span>`).join("")}</div>
+          ${pct > 0 ? `<div class="ec-progress"><div class="ec-progress-bar"><div class="ec-progress-fill" style="width:${pct}%"></div></div><div class="ec-progress-label"><span>Progress</span><span>${pct}%</span></div></div>` : ""}
+        `;
+          grid.appendChild(card);
+        });
+      }
+      renderExamCards("all");
+
+      function filterExams(type, btn) {
+        document
+          .querySelectorAll(".ef-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderExamCards(type);
+      }
+
+      // Show exam detail
+      let currentExamId = null;
+      function showExamDetail(id) {
+        currentExamId = id;
+        const exam = EXAM_CATEGORIES[id];
+        if (!exam) return;
+        document.getElementById("examListView").style.display = "none";
+        document.getElementById("examDetailView").classList.add("active");
+        document.getElementById("edIcon").textContent = exam.icon;
+        document.getElementById("edTitle").textContent = exam.name;
+        document.getElementById("edSub").textContent =
+          `${exam.company} — ${exam.duration} — ${exam.totalQuestions} questions`;
+
+        const sc = document.getElementById("sectionCards");
+        sc.innerHTML = "";
+        exam.sections.forEach((sec) => {
+          const card = document.createElement("div");
+          card.className = "section-card";
+          card.onclick = () => startQuiz(id, sec);
+          card.innerHTML = `
+          <div class="sc-header"><div class="sc-icon">${sec.icon}</div><div class="sc-name">${sec.name}</div></div>
+          <div class="sc-meta">${sec.questions} questions · ${sec.time} min</div>
+          <div class="sc-topics">${sec.topics.map((t) => `<span class="sc-topic">${t}</span>`).join("")}</div>
+        `;
+          sc.appendChild(card);
+        });
+      }
+
+      function showExamList() {
+        document.getElementById("examDetailView").classList.remove("active");
+        document.getElementById("examListView").style.display = "";
+      }
+
+      // Quiz Engine
+      let quizQuestions = [];
+      let quizIndex = 0;
+      let quizAnswers = {};
+      let quizSection = null;
+      let quizTimer = null;
+      let quizTimeSec = 0;
+
+      async function startQuiz(examId, section) {
+        quizSection = section;
+        quizIndex = 0;
+        quizAnswers = {};
+        const modal = document.getElementById("quizModal");
+
+        // Show loading
+        modal.innerHTML = `<div class="loading-ai"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div> Generating ${section.name} questions with AI…</div>`;
+        document.getElementById("quizOverlay").classList.add("active");
+
+        // Try Gemini first, then fall back to sample questions
+        try {
+          if (isGeminiConfigured()) {
+            const topic = section.topics.slice(0, 5).join(", ");
+            quizQuestions = await aiGenerateQuestions(
+              topic,
+              EXAM_CATEGORIES[examId].name + " " + section.name,
+              Math.min(10, section.questions),
+            );
+          } else {
+            throw new Error("no key");
+          }
+        } catch (e) {
+          // Fallback to sample questions
+          quizQuestions = getSampleQuestions(section);
+        }
+
+        if (!quizQuestions.length) {
+          quizQuestions = getFallbackQuestions(section);
+        }
+
+        // Start timer
+        quizTimeSec = section.time * 60;
+        startTimer();
+        renderQuestion();
+      }
+
+      function getSampleQuestions(section) {
+        if (!SAMPLE_QUESTIONS) return [];
+        const cat = section.id;
+        const qs = SAMPLE_QUESTIONS[cat] || SAMPLE_QUESTIONS["aptitude"] || [];
+        return qs.slice(0, 10).map((q, i) => ({
+          question: q.question,
+          options: q.options,
+          correct: q.correct,
+          explanation: q.explanation || "No explanation available.",
+          difficulty: q.difficulty || "medium",
+        }));
+      }
+
+      function getFallbackQuestions(section) {
+        return section.topics.slice(0, 5).map((topic, i) => ({
+          question: `Sample ${section.name} question about ${topic}. (Connect Gemini API in Settings for real AI-generated questions)`,
+          options: ["Option A", "Option B", "Option C", "Option D"],
+          correct: 0,
+          explanation: `This is a placeholder. Add your Gemini API key in Settings to generate real ${section.name} questions.`,
+          difficulty: "medium",
+        }));
+      }
+
+      function startTimer() {
+        clearInterval(quizTimer);
+        quizTimer = setInterval(() => {
+          quizTimeSec--;
+          if (quizTimeSec <= 0) {
+            clearInterval(quizTimer);
+            finishQuiz();
+            return;
+          }
+          const m = Math.floor(quizTimeSec / 60),
+            s = quizTimeSec % 60;
+          const el = document.getElementById("quizTimerEl");
+          if (el) el.textContent = `⏱️ ${m}:${s.toString().padStart(2, "0")}`;
+        }, 1000);
+      }
+
+      function renderQuestion() {
+        if (quizIndex >= quizQuestions.length) {
+          finishQuiz();
+          return;
+        }
+        const q = quizQuestions[quizIndex];
+        const total = quizQuestions.length;
+        const m = Math.floor(quizTimeSec / 60),
+          s = quizTimeSec % 60;
+        const answered = quizAnswers[quizIndex] !== undefined;
+        const letters = ["A", "B", "C", "D", "E", "F"];
+
+        let optionsHtml = q.options
+          .map((opt, i) => {
+            let cls = "quiz-opt";
+            if (answered) {
+              if (i === q.correct) cls += " correct";
+              else if (quizAnswers[quizIndex] === i && i !== q.correct)
+                cls += " wrong";
+            } else if (quizAnswers[quizIndex] === i) cls += " selected";
+            return `<div class="${cls}" onclick="selectAnswer(${i})" data-idx="${i}"><div class="quiz-opt-letter">${letters[i]}</div>${opt}</div>`;
+          })
+          .join("");
+
+        document.getElementById("quizModal").innerHTML = `
+        <button class="quiz-close" onclick="closeQuiz()">✕</button>
+        <div class="quiz-timer" id="quizTimerEl">⏱️ ${m}:${s.toString().padStart(2, "0")}</div>
+        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${((quizIndex + 1) / total) * 100}%"></div></div>
+        <div class="quiz-q-num">Question ${quizIndex + 1} of ${total} ${q.difficulty ? `· <span style="color:${q.difficulty === "hard" ? "var(--danger)" : q.difficulty === "easy" ? "var(--success)" : "var(--warning)"}">${q.difficulty}</span>` : ""}</div>
+        <div class="quiz-q-text">${q.question}</div>
+        <div class="quiz-options">${optionsHtml}</div>
+        <div class="quiz-explanation" id="quizExplanation" style="${answered ? "display:block" : ""}">💡 ${q.explanation || ""}</div>
+        <div class="quiz-nav">
+          <button class="lp-btn lp-btn-secondary" ${quizIndex === 0 ? "disabled" : ""} onclick="quizPrev()">← Previous</button>
+          <button class="lp-btn lp-btn-primary" onclick="quizNext()">${quizIndex === total - 1 ? "Finish" : "Next →"}</button>
+        </div>
+      `;
+      }
+
+      function selectAnswer(idx) {
+        if (quizAnswers[quizIndex] !== undefined) return; // Already answered
+        quizAnswers[quizIndex] = idx;
+        renderQuestion(); // Re-render to show correct/wrong
+      }
+
+      function quizNext() {
+        if (quizIndex < quizQuestions.length - 1) {
+          quizIndex++;
+          renderQuestion();
+        } else finishQuiz();
+      }
+      function quizPrev() {
+        if (quizIndex > 0) {
+          quizIndex--;
+          renderQuestion();
+        }
+      }
+
+      function finishQuiz() {
+        clearInterval(quizTimer);
+        let correct = 0,
+          attempted = 0;
+        quizQuestions.forEach((q, i) => {
+          if (quizAnswers[i] !== undefined) {
+            attempted++;
+            if (quizAnswers[i] === q.correct) correct++;
+          }
+        });
+        const total = quizQuestions.length;
+        const pct = total ? Math.round((correct / total) * 100) : 0;
+
+        // Save progress
+        if (!state.examProgress[currentExamId])
+          state.examProgress[currentExamId] = {
+            completed: 0,
+            total: EXAM_CATEGORIES[currentExamId]?.totalQuestions || 100,
+          };
+        state.examProgress[currentExamId].completed =
+          (state.examProgress[currentExamId].completed || 0) + attempted;
+        addXP(correct * 10 + attempted * 2, "exam-quiz");
+
+        document.getElementById("quizModal").innerHTML = `
+        <button class="quiz-close" onclick="closeQuiz()">✕</button>
+        <div class="quiz-results">
+          <div style="font-size:3rem;margin-bottom:8px">${pct >= 80 ? "🎉" : pct >= 50 ? "👍" : "💪"}</div>
+          <div class="qr-score">${pct}%</div>
+          <div class="qr-label">Score — ${quizSection?.name || "Quiz"}</div>
+          <div class="qr-stats">
+            <div class="qr-stat"><div class="qr-stat-num" style="color:var(--success)">${correct}</div><div class="qr-stat-lbl">Correct</div></div>
+            <div class="qr-stat"><div class="qr-stat-num" style="color:var(--danger)">${attempted - correct}</div><div class="qr-stat-lbl">Wrong</div></div>
+            <div class="qr-stat"><div class="qr-stat-num">${total - attempted}</div><div class="qr-stat-lbl">Skipped</div></div>
+          </div>
+          <p style="color:var(--text3);font-size:.85rem;margin-bottom:16px">+${correct * 10 + attempted * 2} XP earned!</p>
+          <button class="lp-btn lp-btn-primary" onclick="closeQuiz()" style="margin:0 auto">Done</button>
+        </div>
+      `;
+      }
+
+      function closeQuiz() {
+        clearInterval(quizTimer);
+        document.getElementById("quizOverlay").classList.remove("active");
+        document.getElementById("topXp").textContent = state.xp || 0;
+      }
+    </script>
+  </body>
+</html>

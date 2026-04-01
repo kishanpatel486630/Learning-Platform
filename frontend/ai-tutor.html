@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — AI Tutor</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
+        max-height: calc(100vh - 80px);
+      }
+      .chat-header {
+        padding: 16px 0;
+        flex-shrink: 0;
+      }
+      .chat-header h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.3rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .chat-header p {
+        font-size: 0.82rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      .quick-prompts {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+        flex-shrink: 0;
+      }
+      .qp-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+      .qp-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        scroll-behavior: smooth;
+      }
+      .chat-messages::-webkit-scrollbar {
+        width: 6px;
+      }
+      .chat-messages::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 3px;
+      }
+
+      .msg {
+        max-width: 85%;
+        padding: 14px 18px;
+        border-radius: 18px;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        word-break: break-word;
+      }
+      .msg-user {
+        align-self: flex-end;
+        background: var(--accent);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+      .msg-ai {
+        align-self: flex-start;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-bottom-left-radius: 4px;
+      }
+      .msg-ai pre {
+        background: var(--surface);
+        padding: 12px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        margin: 8px 0;
+      }
+      .msg-ai code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.84rem;
+        background: var(--surface);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .msg-ai strong {
+        color: var(--accent);
+      }
+      .msg-ai ul,
+      .msg-ai ol {
+        padding-left: 20px;
+        margin: 6px 0;
+      }
+      .msg-system {
+        align-self: center;
+        background: var(--surface);
+        color: var(--text3);
+        font-size: 0.8rem;
+        padding: 8px 16px;
+        border-radius: 20px;
+      }
+
+      .typing-indicator {
+        align-self: flex-start;
+        display: flex;
+        gap: 4px;
+        padding: 14px 18px;
+        border-radius: 18px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text3);
+        animation: typingBounce 0.6s infinite alternate;
+      }
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes typingBounce {
+        to {
+          background: var(--accent);
+          transform: translateY(-4px);
+        }
+      }
+
+      .chat-input-area {
+        flex-shrink: 0;
+        padding: 14px 0;
+        border-top: 1px solid var(--border);
+      }
+      .chat-input-row {
+        display: flex;
+        gap: 10px;
+        align-items: end;
+      }
+      .chat-textarea {
+        flex: 1;
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.9rem;
+        resize: none;
+        outline: none;
+        max-height: 120px;
+        min-height: 46px;
+        font-family: "DM Sans", sans-serif;
+        line-height: 1.5;
+      }
+      .chat-textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .chat-textarea::placeholder {
+        color: var(--text3);
+      }
+      .chat-send {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        background: var(--gradient1);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      .chat-send:hover {
+        opacity: 0.9;
+        transform: scale(1.05);
+      }
+      .chat-send:disabled {
+        opacity: 0.4;
+      }
+
+      .no-api-banner {
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        text-align: center;
+        margin-bottom: 14px;
+      }
+      .no-api-banner p {
+        font-size: 0.85rem;
+        color: var(--text2);
+        margin-bottom: 8px;
+      }
+
+      .mode-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+      }
+      .mode-tab {
+        padding: 7px 16px;
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text3);
+        cursor: pointer;
+        border: 1.5px solid var(--border);
+        transition: all 0.15s;
+      }
+      .mode-tab.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">AI Tutor</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="chat-container">
+          <div class="chat-header">
+            <h2>🤖 AI Study Assistant</h2>
+            <p>
+              Powered by Google Gemini — Ask anything about your exam
+              preparation
+            </p>
+          </div>
+
+          <div class="mode-tabs">
+            <button class="mode-tab active" onclick="setMode('tutor', this)">
+              💡 Tutor
+            </button>
+            <button class="mode-tab" onclick="setMode('solver', this)">
+              🔧 Problem Solver
+            </button>
+            <button class="mode-tab" onclick="setMode('explain', this)">
+              📖 Explain Concept
+            </button>
+            <button class="mode-tab" onclick="setMode('interview', this)">
+              💼 Interview Coach
+            </button>
+          </div>
+
+          <div class="quick-prompts" id="quickPrompts">
+            <button
+              class="qp-btn"
+              onclick="quickAsk('Explain binary search with an example')"
+            >
+              Binary Search
+            </button>
+            <button
+              class="qp-btn"
+              onclick="quickAsk('What are the ACID properties in DBMS?')"
+            >
+              ACID Properties
+            </button>
+            <button
+              class="qp-btn"
+              onclick="
+                quickAsk(
+                  'Solve: A train 200m long crosses a bridge in 20 seconds at 54 km/h. Find bridge length.',
+                )
+              "
+            >
+              Aptitude Problem
+            </button>
+            <button
+              class="qp-btn"
+              onclick="quickAsk('OOP concepts with real-world examples')"
+            >
+              OOP Concepts
+            </button>
+            <button
+              class="qp-btn"
+              onclick="quickAsk('Tips for TCS NQT verbal section')"
+            >
+              TCS NQT Tips
+            </button>
+            <button
+              class="qp-btn"
+              onclick="
+                quickAsk('Common HR interview questions and best answers')
+              "
+            >
+              HR Questions
+            </button>
+          </div>
+
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg msg-system">
+              👋 Welcome! I'm your AI study assistant. Ask me anything about
+              your exam preparation.
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <div id="noApiBanner" style="display: none" class="no-api-banner">
+              <p>
+                ⚠️ Gemini API key not configured.
+                <a href="settings.html">Add it in Settings</a> to enable AI
+                features.
+              </p>
+            </div>
+            <div class="chat-input-row">
+              <textarea
+                class="chat-textarea"
+                id="chatInput"
+                placeholder="Ask me anything… (Shift+Enter for new line)"
+                rows="1"
+                onkeydown="handleKey(event)"
+              ></textarea>
+              <button class="chat-send" id="sendBtn" onclick="sendMessage()">
+                ➤
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("ai-tutor");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      let chatMode = "tutor";
+      let chatHistory = [];
+      let isProcessing = false;
+
+      // Check API key
+      if (!isGeminiConfigured()) {
+        document.getElementById("noApiBanner").style.display = "";
+      }
+
+      function setMode(mode, btn) {
+        chatMode = mode;
+        document
+          .querySelectorAll(".mode-tab")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const prompts = {
+          tutor: [
+            ["Binary Search", "Explain binary search with an example"],
+            ["ACID Properties", "What are the ACID properties in DBMS?"],
+            ["OOP Concepts", "OOP concepts with real-world examples"],
+            ["TCS NQT Tips", "Tips for TCS NQT verbal section"],
+          ],
+          solver: [
+            [
+              "Aptitude Problem",
+              "Solve: A train 200m long crosses a bridge in 20s at 54km/h",
+            ],
+            [
+              "Coding Problem",
+              "Write a function to find the longest palindromic substring",
+            ],
+            [
+              "SQL Query",
+              "Write SQL to find the 2nd highest salary from Employees table",
+            ],
+            [
+              "Math Problem",
+              "Find the sum of first 50 terms of AP: 3, 7, 11, 15…",
+            ],
+          ],
+          explain: [
+            ["Normalization", "Explain database normalization with examples"],
+            ["Recursion", "Explain recursion with a simple example"],
+            ["Networking", "Explain TCP/IP model layers"],
+            ["OS Concepts", "Explain process scheduling algorithms"],
+          ],
+          interview: [
+            [
+              "Tell me about yourself",
+              "How to answer 'Tell me about yourself' in interview?",
+            ],
+            [
+              "Technical Round",
+              "Common technical round questions for freshers",
+            ],
+            ["Behavioral", "STAR method for behavioral interview questions"],
+            ["Salary Negotiation", "How to negotiate salary as a fresher?"],
+          ],
+        };
+
+        const container = document.getElementById("quickPrompts");
+        container.innerHTML = (prompts[mode] || prompts.tutor)
+          .map(
+            ([label, q]) =>
+              `<button class="qp-btn" onclick="quickAsk('${q.replace(/'/g, "\\'")}')">${label}</button>`,
+          )
+          .join("");
+      }
+
+      function handleKey(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+        // Auto-resize
+        const ta = e.target;
+        ta.style.height = "46px";
+        ta.style.height = Math.min(ta.scrollHeight, 120) + "px";
+      }
+
+      function quickAsk(text) {
+        document.getElementById("chatInput").value = text;
+        sendMessage();
+      }
+
+      function addMessage(role, content) {
+        const container = document.getElementById("chatMessages");
+        const div = document.createElement("div");
+
+        if (role === "user") {
+          div.className = "msg msg-user";
+          div.textContent = content;
+        } else if (role === "ai") {
+          div.className = "msg msg-ai";
+          div.innerHTML = formatAIResponse(content);
+        } else {
+          div.className = "msg msg-system";
+          div.textContent = content;
+        }
+
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return div;
+      }
+
+      function showTyping() {
+        const container = document.getElementById("chatMessages");
+        const div = document.createElement("div");
+        div.className = "typing-indicator";
+        div.id = "typingIndicator";
+        div.innerHTML =
+          '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+      }
+
+      function hideTyping() {
+        const el = document.getElementById("typingIndicator");
+        if (el) el.remove();
+      }
+
+      function formatAIResponse(text) {
+        // Convert markdown-ish formatting to HTML
+        return text
+          .replace(/```(\w*)\n([\s\S]*?)```/g, "<pre><code>$2</code></pre>")
+          .replace(/`([^`]+)`/g, "<code>$1</code>")
+          .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+          .replace(/^\s*[-•]\s+(.+)$/gm, "<li>$1</li>")
+          .replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>")
+          .replace(/^\s*\d+\.\s+(.+)$/gm, "<li>$1</li>")
+          .replace(/\n{2,}/g, "<br><br>")
+          .replace(/\n/g, "<br>");
+      }
+
+      async function sendMessage() {
+        const input = document.getElementById("chatInput");
+        const text = input.value.trim();
+        if (!text || isProcessing) return;
+
+        // Add user message
+        addMessage("user", text);
+        chatHistory.push({ role: "user", content: text });
+        input.value = "";
+        input.style.height = "46px";
+
+        if (!isGeminiConfigured()) {
+          addMessage(
+            "ai",
+            "⚠️ **Gemini API key not set.** Go to [Settings](settings.html) to configure your API key.\n\nIn the meantime, here's a quick tip: Practice daily with the Question Bank for consistent improvement!",
+          );
+          return;
+        }
+
+        isProcessing = true;
+        document.getElementById("sendBtn").disabled = true;
+        showTyping();
+
+        try {
+          const systemPrompts = {
+            tutor:
+              "You are an expert tutor for Indian engineering students preparing for placements and competitive exams (TCS NQT, Infosys, Wipro, GATE, etc.). Give clear, concise explanations with examples. Use simple language.",
+            solver:
+              "You are a problem-solving expert. Solve the given problem step-by-step. Show your working clearly. If it's a coding problem, provide clean code with comments.",
+            explain:
+              "You are a concept explainer for engineering students. Explain concepts clearly with real-world analogies and examples. Break complex topics into simple parts.",
+            interview:
+              "You are an interview coach for freshers at Indian IT companies. Give practical tips, sample answers, and strategies for cracking interviews.",
+          };
+
+          const prompt = `${systemPrompts[chatMode] || systemPrompts.tutor}\n\nConversation context:\n${chatHistory
+            .slice(-6)
+            .map((m) => `${m.role}: ${m.content}`)
+            .join("\n")}\n\nUser: ${text}\n\nAssistant:`;
+
+          const response = await geminiRequest(prompt);
+          hideTyping();
+          addMessage("ai", response);
+          chatHistory.push({ role: "ai", content: response });
+          addXP(5, "ai-tutor");
+          document.getElementById("topXp").textContent = state.xp || 0;
+        } catch (e) {
+          hideTyping();
+          addMessage(
+            "ai",
+            "❌ Sorry, I encountered an error. Please try again.\n\nError: " +
+              (e.message || "Unknown error"),
+          );
+        }
+
+        isProcessing = false;
+        document.getElementById("sendBtn").disabled = false;
+      }
+    </script>
+  </body>
+</html>

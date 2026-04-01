@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      /* Dashboard specific */
+      .welcome-banner {
+        padding: 28px;
+        border-radius: 20px;
+        background: var(--gradient1);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .welcome-banner::after {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .welcome-banner h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        position: relative;
+        z-index: 1;
+      }
+      .welcome-banner p {
+        font-size: 0.9rem;
+        opacity: 0.85;
+        position: relative;
+        z-index: 1;
+      }
+
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .qa-card {
+        padding: 18px 16px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+      }
+      .qa-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        box-shadow: 0 8px 24px var(--accent-glow);
+      }
+      .qa-icon {
+        font-size: 1.6rem;
+        margin-bottom: 6px;
+      }
+      .qa-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text2);
+      }
+
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        padding: 20px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .stat-card .sc-label {
+        font-size: 0.75rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .stat-card .sc-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        font-family: "Syne", sans-serif;
+        color: var(--accent);
+      }
+      .stat-card .sc-sub {
+        font-size: 0.78rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      .dash-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+      @media (max-width: 800px) {
+        .dash-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .dash-card {
+        padding: 22px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .dash-card h3 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .exam-progress-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .exam-progress-item:last-child {
+        border-bottom: none;
+      }
+      .epi-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--surface2);
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      .epi-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .epi-name {
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .epi-bar {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--surface3);
+        margin-top: 4px;
+        overflow: hidden;
+      }
+      .epi-bar-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: var(--gradient1);
+        transition: width 0.5s;
+      }
+      .epi-pct {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .activity-row {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+        margin-top: 8px;
+      }
+      .activity-cell {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        background: var(--surface3);
+      }
+      .activity-cell.l1 {
+        background: rgba(124, 58, 237, 0.25);
+      }
+      .activity-cell.l2 {
+        background: rgba(124, 58, 237, 0.5);
+      }
+      .activity-cell.l3 {
+        background: rgba(124, 58, 237, 0.75);
+      }
+      .activity-cell.l4 {
+        background: var(--accent);
+      }
+
+      .recent-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .recent-item:last-child {
+        border-bottom: none;
+      }
+      .ri-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .ri-text {
+        font-size: 0.83rem;
+        flex: 1;
+      }
+      .ri-time {
+        font-size: 0.72rem;
+        color: var(--text3);
+      }
+
+      .streak-display {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--surface);
+        margin-bottom: 16px;
+      }
+      .streak-fire {
+        font-size: 2rem;
+      }
+      .streak-num {
+        font-size: 2rem;
+        font-weight: 800;
+        font-family: "Syne", sans-serif;
+        color: var(--accent);
+      }
+      .streak-label {
+        font-size: 0.8rem;
+        color: var(--text3);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2 class="topbar-title">Dashboard</h2>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-stat" title="XP Points">
+          ⚡ <span id="topXp">0</span> XP
+        </div>
+        <div class="topbar-stat" title="Streak">
+          🔥 <span id="topStreak">0</span> days
+        </div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+          title="Toggle theme"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner" id="welcomeBanner">
+          <h1 id="welcomeMsg">Welcome back!</h1>
+          <p id="welcomeSub">Ready to continue your preparation?</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="qa-card" onclick="location.href = 'exams.html'">
+            <div class="qa-icon">📝</div>
+            <div class="qa-label">Exam Prep</div>
+          </div>
+          <div class="qa-card" onclick="location.href = 'interview-prep.html'">
+            <div class="qa-icon">💼</div>
+            <div class="qa-label">Interview</div>
+          </div>
+          <div class="qa-card" onclick="location.href = 'question-bank.html'">
+            <div class="qa-icon">❓</div>
+            <div class="qa-label">Questions</div>
+          </div>
+          <div class="qa-card" onclick="location.href = 'ai-tutor.html'">
+            <div class="qa-icon">🤖</div>
+            <div class="qa-label">AI Tutor</div>
+          </div>
+          <div class="qa-card" onclick="location.href = 'study-planner.html'">
+            <div class="qa-icon">📅</div>
+            <div class="qa-label">Planner</div>
+          </div>
+          <div class="qa-card" onclick="location.href = 'leaderboard.html'">
+            <div class="qa-icon">🏆</div>
+            <div class="qa-label">Leaderboard</div>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stat-row" id="statRow">
+          <div class="stat-card">
+            <div class="sc-label">Total XP</div>
+            <div class="sc-value" id="sXp">0</div>
+            <div class="sc-sub">Keep studying to earn more!</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Questions Solved</div>
+            <div class="sc-value" id="sQs">0</div>
+            <div class="sc-sub">Across all categories</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Study Hours</div>
+            <div class="sc-value" id="sHrs">0</div>
+            <div class="sc-sub">Total time invested</div>
+          </div>
+          <div class="stat-card">
+            <div class="sc-label">Streak</div>
+            <div class="sc-value" id="sStrk">0</div>
+            <div class="sc-sub">Consecutive study days</div>
+          </div>
+        </div>
+
+        <!-- Two-column Grid -->
+        <div class="dash-grid">
+          <!-- Exam Progress -->
+          <div class="dash-card">
+            <h3>📝 Exam Progress</h3>
+            <div id="examProgressList">
+              <p style="color: var(--text3); font-size: 0.85rem">
+                No exams started yet. <a href="exams.html">Start now →</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Streak & Activity -->
+          <div class="dash-card">
+            <h3>🔥 Study Activity</h3>
+            <div class="streak-display">
+              <div class="streak-fire">🔥</div>
+              <div>
+                <div class="streak-num" id="streakNum">0</div>
+                <div class="streak-label">day streak</div>
+              </div>
+            </div>
+            <p
+              style="font-size: 0.8rem; color: var(--text3); margin-bottom: 8px"
+            >
+              Last 60 days
+            </p>
+            <div class="activity-row" id="activityMap"></div>
+          </div>
+
+          <!-- Upcoming Tasks -->
+          <div class="dash-card">
+            <h3>📅 Today's Plan</h3>
+            <div id="todayPlan">
+              <p style="color: var(--text3); font-size: 0.85rem">
+                No tasks scheduled today.
+                <a href="study-planner.html">Plan now →</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="dash-card">
+            <h3>📋 Recent Activity</h3>
+            <div id="recentActivity">
+              <p style="color: var(--text3); font-size: 0.85rem">
+                No recent activity yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("dashboard");
+
+      // ── Load data from localStorage (instant render) ─────────────────
+      function renderDashboard(s) {
+        document.getElementById("topXp").textContent = s.xp || 0;
+        document.getElementById("topStreak").textContent = s.streak || 0;
+        document.getElementById("sXp").textContent = s.xp || 0;
+        document.getElementById("sStrk").textContent = s.streak || 0;
+        document.getElementById("streakNum").textContent = s.streak || 0;
+
+        // Welcome message
+        const hour = new Date().getHours();
+        const greeting =
+          hour < 12
+            ? "Good morning"
+            : hour < 17
+              ? "Good afternoon"
+              : "Good evening";
+        document.getElementById("welcomeMsg").textContent =
+          `${greeting}, ${s.name || "Learner"}! 👋`;
+
+        // Count questions answered
+        let totalQs = 0;
+        if (s.answeredQuestions) {
+          Object.values(s.answeredQuestions).forEach((v) => {
+            if (typeof v === "object") totalQs += Object.keys(v).length;
+            else totalQs++;
+          });
+        }
+        document.getElementById("sQs").textContent = totalQs;
+
+        // Study hours
+        const studyHrs = Math.round(((s.studyMinutes || 0) / 60) * 10) / 10;
+        document.getElementById("sHrs").textContent = studyHrs;
+
+        // Exam progress
+        if (s.targetExams && s.targetExams.length > 0) {
+          const EXAM_NAMES = {
+            "tcs-nqt": "TCS NQT",
+            infosys: "Infosys",
+            wipro: "Wipro NLTH",
+            cognizant: "Cognizant GenC",
+            accenture: "Accenture",
+            "gate-cs": "GATE CS",
+            "dsa-placement": "DSA / Coding",
+            amcat: "AMCAT",
+            cocubes: "CoCubes",
+            govt: "Govt. Exams",
+          };
+          const EXAM_ICONS = {
+            "tcs-nqt": "🏢",
+            infosys: "🔷",
+            wipro: "🟢",
+            cognizant: "🟣",
+            accenture: "🔶",
+            "gate-cs": "🎓",
+            "dsa-placement": "💻",
+            amcat: "📊",
+            cocubes: "📐",
+            govt: "🏛️",
+          };
+          let html = "";
+          s.targetExams.forEach((id) => {
+            const prog = s.examProgress?.[id];
+            const pct = prog
+              ? Math.round(((prog.completed || 0) / (prog.total || 100)) * 100)
+              : 0;
+            html += `<div class="exam-progress-item">
+              <div class="epi-icon">${EXAM_ICONS[id] || "📝"}</div>
+              <div class="epi-info"><div class="epi-name">${EXAM_NAMES[id] || id}</div>
+              <div class="epi-bar"><div class="epi-bar-fill" style="width:${pct}%"></div></div></div>
+              <div class="epi-pct">${pct}%</div></div>`;
+          });
+          document.getElementById("examProgressList").innerHTML = html;
+        }
+
+        // Activity heatmap
+        const map = document.getElementById("activityMap");
+        map.innerHTML = "";
+        const today = new Date();
+        for (let i = 59; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          const val = s.activityLog?.[key] || 0;
+          const cell = document.createElement("div");
+          cell.className =
+            "activity-cell" +
+            (val > 150
+              ? " l4"
+              : val > 80
+                ? " l3"
+                : val > 30
+                  ? " l2"
+                  : val > 0
+                    ? " l1"
+                    : "");
+          cell.title = `${key}: ${val} XP`;
+          map.appendChild(cell);
+        }
+
+        // Today's plan
+        const todayKey = new Date().toISOString().split("T")[0];
+        const tasks = s.studyPlan?.[todayKey];
+        if (tasks && tasks.length > 0) {
+          let html = "";
+          tasks.forEach((t) => {
+            html += `<div class="recent-item">
+              <div class="ri-dot" style="background:${t.done ? "var(--success)" : "var(--surface3)"}"></div>
+              <div class="ri-text" style="${t.done ? "text-decoration:line-through;opacity:.6" : ""}">${t.task}</div>
+              <div class="ri-time">${t.duration || ""}</div></div>`;
+          });
+          document.getElementById("todayPlan").innerHTML = html;
+        }
+
+        // Recent activity
+        const log = s.activityLog || {};
+        const dates = Object.keys(log).sort().reverse().slice(0, 5);
+        if (dates.length) {
+          let html = "";
+          dates.forEach((d) => {
+            html += `<div class="recent-item">
+              <div class="ri-dot" style="background:var(--accent)"></div>
+              <div class="ri-text">Earned ${log[d]} XP</div>
+              <div class="ri-time">${d}</div></div>`;
+          });
+          document.getElementById("recentActivity").innerHTML = html;
+        }
+      }
+
+      // Initial render from cached state
+      renderDashboard(state);
+
+      // ── Fetch live data from backend and re-render ─────────────────────
+      (async function loadLiveData() {
+        if (!window.API || !API.isLoggedIn()) return;
+        try {
+          const { user } = await API.getMe();
+          if (!user) return;
+          // Update localStorage cache
+          if (typeof _cacheUserState === "function") _cacheUserState(user);
+          // Merge fresh data into state and re-render
+          const fresh = {
+            ...state,
+            name: user.name || state.name,
+            xp: user.xp ?? state.xp,
+            streak: user.streak ?? state.streak,
+            studyMinutes: user.studyMinutes ?? state.studyMinutes,
+            activityLog: user.activityLog || state.activityLog,
+            examProgress: user.examProgress || state.examProgress,
+            targetExams: user.targetExams || state.targetExams,
+            answeredQuestions:
+              user.answeredQuestions || state.answeredQuestions,
+          };
+          renderDashboard(fresh);
+        } catch (_) {
+          // Use cached state silently on error
+        }
+      })();
+    </script>
+  </body>
+</html>

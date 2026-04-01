@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Analytics</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .an-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+      }
+      .an-stat {
+        padding: 20px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        text-align: center;
+      }
+      .an-stat-icon {
+        font-size: 1.8rem;
+        margin-bottom: 6px;
+      }
+      .an-stat-val {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .an-stat-label {
+        font-size: 0.78rem;
+        color: var(--text3);
+        margin-top: 3px;
+      }
+
+      .an-section {
+        margin-bottom: 24px;
+      }
+      .an-section h3 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 12px;
+      }
+
+      /* Heatmap */
+      .heatmap-wrap {
+        overflow-x: auto;
+        padding-bottom: 8px;
+      }
+      .heatmap {
+        display: flex;
+        gap: 3px;
+        flex-wrap: wrap;
+        max-width: 100%;
+      }
+      .hm-day {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        background: var(--surface2);
+      }
+      .hm-1 {
+        background: rgba(124, 58, 237, 0.2);
+      }
+      .hm-2 {
+        background: rgba(124, 58, 237, 0.4);
+      }
+      .hm-3 {
+        background: rgba(124, 58, 237, 0.6);
+      }
+      .hm-4 {
+        background: var(--accent);
+      }
+      .hm-legend {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        font-size: 0.7rem;
+        color: var(--text3);
+        margin-top: 8px;
+      }
+
+      /* Bar charts */
+      .bar-chart {
+        display: flex;
+        gap: 6px;
+        align-items: flex-end;
+        height: 160px;
+        padding: 10px 0;
+      }
+      .bar-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .bar-fill {
+        width: 100%;
+        max-width: 40px;
+        border-radius: 6px 6px 0 0;
+        background: linear-gradient(to top, var(--accent), #a855f7);
+        min-height: 2px;
+        transition: height 0.5s;
+      }
+      .bar-label {
+        font-size: 0.65rem;
+        color: var(--text3);
+        text-align: center;
+      }
+      .bar-value {
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--text);
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* Category breakdown */
+      .cat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .cat-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .cat-name {
+        width: 120px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        flex-shrink: 0;
+      }
+      .cat-bar-bg {
+        flex: 1;
+        height: 10px;
+        border-radius: 5px;
+        background: var(--surface2);
+        overflow: hidden;
+      }
+      .cat-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.5s;
+      }
+      .cat-val {
+        width: 40px;
+        text-align: right;
+        font-size: 0.78rem;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--text2);
+      }
+
+      /* Progress timeline */
+      .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .tl-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 12px;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .tl-date {
+        font-size: 0.72rem;
+        color: var(--text3);
+        min-width: 70px;
+        font-family: "JetBrains Mono", monospace;
+        padding-top: 2px;
+      }
+      .tl-content {
+        flex: 1;
+      }
+      .tl-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+      .tl-detail {
+        font-size: 0.78rem;
+        color: var(--text2);
+        margin-top: 2px;
+      }
+      .tl-xp {
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 0.78rem;
+      }
+
+      /* Study time chart */
+      .st-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+      }
+      .st-day {
+        text-align: center;
+        padding: 10px 6px;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .st-day-label {
+        font-size: 0.7rem;
+        color: var(--text3);
+        margin-bottom: 4px;
+      }
+      .st-day-hrs {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--accent);
+      }
+      .st-day-min {
+        font-size: 0.65rem;
+        color: var(--text3);
+      }
+
+      .empty-msg {
+        text-align: center;
+        padding: 30px;
+        color: var(--text3);
+        font-size: 0.88rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Analytics</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <!-- Summary Stats -->
+        <div class="an-grid" id="anStats"></div>
+
+        <!-- Activity Heatmap -->
+        <div class="an-section">
+          <h3>📅 Activity Heatmap (90 days)</h3>
+          <div class="lp-card">
+            <div class="heatmap-wrap">
+              <div class="heatmap" id="heatmap"></div>
+            </div>
+            <div class="hm-legend">
+              Less
+              <div class="hm-day"></div>
+              <div class="hm-day hm-1"></div>
+              <div class="hm-day hm-2"></div>
+              <div class="hm-day hm-3"></div>
+              <div class="hm-day hm-4"></div>
+              More
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly XP chart -->
+        <div class="an-section">
+          <h3>📊 Weekly XP</h3>
+          <div class="lp-card">
+            <div class="bar-chart" id="weeklyChart"></div>
+          </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="an-section">
+          <h3>📂 Category Breakdown</h3>
+          <div class="lp-card">
+            <div class="cat-list" id="catBreakdown"></div>
+          </div>
+        </div>
+
+        <!-- Study Time This Week -->
+        <div class="an-section">
+          <h3>⏱ Study Time This Week</h3>
+          <div class="lp-card">
+            <div class="st-grid" id="studyTimeGrid"></div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="an-section">
+          <h3>🕒 Recent Activity</h3>
+          <div class="lp-card">
+            <div class="timeline" id="activityTimeline"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("analytics");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      // ── Summary Stats ───────────────────────────────────
+      (function renderStats() {
+        const answeredCount = Object.keys(state.answeredQuestions || {}).length;
+        const correctCount = Object.values(
+          state.answeredQuestions || {},
+        ).filter((a) => a === true || a?.correct).length;
+        const accuracy =
+          answeredCount > 0
+            ? Math.round((correctCount / answeredCount) * 100)
+            : 0;
+        const notesCount = (state.notes || []).length;
+        const pomodoros = state.pomodorosTotal || 0;
+        const studyHrs = Math.round(((state.studyMinutes || 0) / 60) * 10) / 10;
+        const badges = (state.badges || []).length;
+        const friends = (state.friends || []).length;
+        const daysActive = Object.keys(state.activityLog || {}).length;
+
+        const stats = [
+          {
+            icon: "⚡",
+            val: (state.xp || 0).toLocaleString(),
+            label: "Total XP",
+          },
+          { icon: "🔥", val: state.streak || 0, label: "Day Streak" },
+          { icon: "❓", val: answeredCount, label: "Questions Solved" },
+          { icon: "🎯", val: accuracy + "%", label: "Accuracy" },
+          { icon: "⏱", val: studyHrs + "h", label: "Study Time" },
+          { icon: "🍅", val: pomodoros, label: "Pomodoros" },
+          { icon: "📝", val: notesCount, label: "Notes" },
+          { icon: "👥", val: friends, label: "Friends" },
+          { icon: "📅", val: daysActive, label: "Days Active" },
+          { icon: "🏅", val: badges, label: "Badges" },
+        ];
+
+        document.getElementById("anStats").innerHTML = stats
+          .map(
+            (s) => `
+        <div class="an-stat">
+          <div class="an-stat-icon">${s.icon}</div>
+          <div class="an-stat-val">${s.val}</div>
+          <div class="an-stat-label">${s.label}</div>
+        </div>
+      `,
+          )
+          .join("");
+      })();
+
+      // ── Heatmap ─────────────────────────────────────────
+      (function renderHeatmap() {
+        const heatmap = document.getElementById("heatmap");
+        const log = state.activityLog || {};
+        const today = new Date();
+        for (let i = 89; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          const val = log[key] || 0;
+          const level =
+            val === 0
+              ? ""
+              : val < 20
+                ? " hm-1"
+                : val < 50
+                  ? " hm-2"
+                  : val < 100
+                    ? " hm-3"
+                    : " hm-4";
+          const day = document.createElement("div");
+          day.className = "hm-day" + level;
+          day.title = `${key}: ${val} XP`;
+          heatmap.appendChild(day);
+        }
+      })();
+
+      // ── Weekly XP Chart ─────────────────────────────────
+      (function renderWeeklyChart() {
+        const chart = document.getElementById("weeklyChart");
+        const log = state.activityLog || {};
+        const today = new Date();
+        const weekData = [];
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          weekData.push({ day: dayNames[d.getDay()], xp: log[key] || 0 });
+        }
+
+        const maxXp = Math.max(...weekData.map((d) => d.xp), 1);
+        chart.innerHTML = weekData
+          .map((d) => {
+            const height = Math.max((d.xp / maxXp) * 130, 2);
+            return `
+          <div class="bar-col">
+            <div class="bar-value">${d.xp}</div>
+            <div class="bar-fill" style="height:${height}px"></div>
+            <div class="bar-label">${d.day}</div>
+          </div>
+        `;
+          })
+          .join("");
+      })();
+
+      // ── Category Breakdown ──────────────────────────────
+      (function renderCategories() {
+        const container = document.getElementById("catBreakdown");
+        const answered = state.answeredQuestions || {};
+        const categories = {};
+
+        Object.keys(answered).forEach((qid) => {
+          const parts = qid.split("_");
+          const cat = parts[0] || "general";
+          categories[cat] = (categories[cat] || 0) + 1;
+        });
+
+        // Also count from exam progress
+        const examProg = state.examProgress || {};
+        Object.keys(examProg).forEach((exam) => {
+          categories[exam] =
+            (categories[exam] || 0) +
+            Object.keys(examProg[exam]?.sections || {}).length;
+        });
+
+        const colors = [
+          "#7c3aed",
+          "#ef4444",
+          "#f59e0b",
+          "#10b981",
+          "#0ea5e9",
+          "#ec4899",
+          "#8b5cf6",
+          "#f97316",
+        ];
+        const entries = Object.entries(categories);
+
+        if (entries.length === 0) {
+          container.innerHTML =
+            '<div class="empty-msg">Start solving questions to see category breakdown!</div>';
+          return;
+        }
+
+        const maxVal = Math.max(...entries.map((e) => e[1]));
+        container.innerHTML = entries
+          .map(
+            ([cat, count], i) => `
+        <div class="cat-row">
+          <div class="cat-name">${cat.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${(count / maxVal) * 100}%;background:${colors[i % colors.length]}"></div></div>
+          <div class="cat-val">${count}</div>
+        </div>
+      `,
+          )
+          .join("");
+      })();
+
+      // ── Study Time Grid ─────────────────────────────────
+      (function renderStudyTime() {
+        const grid = document.getElementById("studyTimeGrid");
+        const today = new Date();
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const plan = state.studyPlan || {};
+
+        let html = "";
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(today);
+          d.setDate(d.getDate() - i);
+          const key = d.toISOString().split("T")[0];
+          const tasks = plan[key] || [];
+          const doneTasks = tasks.filter((t) => t.done);
+          const hrs =
+            doneTasks.length > 0
+              ? Math.round(doneTasks.length * 0.5 * 10) / 10
+              : 0;
+          const isToday = i === 0;
+
+          html += `
+          <div class="st-day" style="${isToday ? "border:1px solid var(--accent)" : ""}">
+            <div class="st-day-label">${dayNames[d.getDay()]}</div>
+            <div class="st-day-hrs">${hrs}</div>
+            <div class="st-day-min">hours</div>
+          </div>
+        `;
+        }
+        grid.innerHTML = html;
+      })();
+
+      // ── Activity Timeline ───────────────────────────────
+      (function renderTimeline() {
+        const tl = document.getElementById("activityTimeline");
+        const log = state.activityLog || {};
+        const entries = Object.entries(log)
+          .sort((a, b) => b[0].localeCompare(a[0]))
+          .slice(0, 10);
+
+        if (entries.length === 0) {
+          tl.innerHTML =
+            '<div class="empty-msg">No activity recorded yet. Start studying to see your timeline!</div>';
+          return;
+        }
+
+        tl.innerHTML = entries
+          .map(([date, xp]) => {
+            const d = new Date(date);
+            const formatted = d.toLocaleDateString("en-IN", {
+              day: "numeric",
+              month: "short",
+            });
+            const desc =
+              xp >= 100
+                ? "🔥 Incredible study session!"
+                : xp >= 50
+                  ? "💪 Great progress!"
+                  : xp >= 20
+                    ? "📚 Solid effort!"
+                    : "✨ Good start!";
+            return `
+          <div class="tl-item">
+            <div class="tl-date">${formatted}</div>
+            <div class="tl-content">
+              <div class="tl-title">${desc}</div>
+              <div class="tl-detail">Earned XP through studying, quizzes, and practice</div>
+            </div>
+            <div class="tl-xp">+${xp} XP</div>
+          </div>
+        `;
+          })
+          .join("");
+      })();
+    </script>
+  </body>
+</html>

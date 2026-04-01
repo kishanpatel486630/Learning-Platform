@@ -1,0 +1,41 @@
+# ─── Python ───────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ─── Virtual Environment ─────────────────────
+venv/
+env/
+.venv/
+
+# ─── Environment Variables ────────────────────
+.env
+backend/.env
+
+# ─── IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Node (if any frontend tooling) ──────────
+node_modules/
+package-lock.json
+
+# ─── Logs ─────────────────────────────────────
+*.log
+logs/
+
+# ─── Uploads ──────────────────────────────────
+uploads/

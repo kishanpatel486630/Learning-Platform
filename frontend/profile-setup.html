@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Profile Setup</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      button {
+        cursor: pointer;
+        border: none;
+        outline: none;
+        font-family: inherit;
+      }
+      input,
+      select,
+      textarea {
+        font-family: inherit;
+      }
+      a {
+        text-decoration: none;
+        color: var(--accent);
+      }
+
+      .bg-scene {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 20% 10%,
+            var(--accent-glow),
+            transparent 60%
+          ),
+          var(--bg);
+      }
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.35;
+        animation: orbDrift 20s ease-in-out infinite alternate;
+      }
+      .orb:nth-child(1) {
+        width: 400px;
+        height: 400px;
+        background: var(--accent);
+        top: -100px;
+        left: -100px;
+      }
+      .orb:nth-child(2) {
+        width: 300px;
+        height: 300px;
+        background: #7c3aed;
+        bottom: -80px;
+        right: -80px;
+        animation-delay: -7s;
+      }
+      @keyframes orbDrift {
+        0% {
+          transform: translate(0, 0) scale(1);
+        }
+        100% {
+          transform: translate(-20px, 20px) scale(0.95);
+        }
+      }
+
+      /* Wizard */
+      .wz-container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+      }
+      .wz-card {
+        width: 100%;
+        max-width: 600px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        padding: 36px 34px;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow);
+      }
+      .wz-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .wz-header h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .wz-header p {
+        font-size: 0.88rem;
+        color: var(--text3);
+      }
+
+      /* Step indicator */
+      .wz-steps {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-bottom: 28px;
+      }
+      .wz-step-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--surface3);
+        transition: all 0.3s;
+      }
+      .wz-step-dot.active {
+        background: var(--accent);
+        width: 28px;
+        border-radius: 5px;
+      }
+      .wz-step-dot.done {
+        background: var(--success);
+      }
+
+      /* Form elements */
+      .wz-section {
+        display: none;
+      }
+      .wz-section.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .fg {
+        margin-bottom: 18px;
+      }
+      .fg label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.84rem;
+        color: var(--text2);
+        margin-bottom: 5px;
+      }
+      .fg .hint {
+        font-weight: 400;
+        color: var(--text3);
+        font-size: 0.72rem;
+      }
+      .fi {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.9rem;
+        outline: none;
+        transition:
+          border 0.2s,
+          box-shadow 0.2s;
+      }
+      .fi:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .fi::placeholder {
+        color: var(--text3);
+      }
+      select.fi {
+        cursor: pointer;
+      }
+      textarea.fi {
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .fg-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 500px) {
+        .fg-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Photo upload */
+      .photo-upload {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .photo-preview {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--surface2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid var(--border);
+        transition: border-color 0.2s;
+      }
+      .photo-preview:hover {
+        border-color: var(--accent);
+      }
+      .photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .photo-upload-text {
+        font-size: 0.85rem;
+        color: var(--text3);
+      }
+      .photo-upload-text span {
+        color: var(--accent);
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Chip selector */
+      .chip-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .chip.selected {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      /* Toggle */
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: var(--surface);
+        margin-bottom: 12px;
+      }
+      .toggle-row .toggle-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+      .toggle-row .toggle-sub {
+        font-size: 0.75rem;
+        color: var(--text3);
+      }
+      .toggle-switch {
+        width: 48px;
+        height: 26px;
+        border-radius: 13px;
+        background: var(--surface3);
+        cursor: pointer;
+        position: relative;
+        transition: background 0.2s;
+      }
+      .toggle-switch.on {
+        background: var(--accent);
+      }
+      .toggle-switch::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #fff;
+        top: 3px;
+        left: 3px;
+        transition: transform 0.2s;
+      }
+      .toggle-switch.on::after {
+        transform: translateX(22px);
+      }
+
+      /* Time slots */
+      .time-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      @media (max-width: 420px) {
+        .time-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      .time-card {
+        padding: 14px 10px;
+        border-radius: 12px;
+        text-align: center;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .time-card:hover {
+        border-color: var(--accent);
+      }
+      .time-card.selected {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+      .time-card .tc-icon {
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+      }
+      .time-card .tc-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      /* Hours slider */
+      .range-container {
+        position: relative;
+        padding: 10px 0;
+      }
+      .range-container input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--surface3);
+        outline: none;
+      }
+      .range-container input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--accent);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      .range-value {
+        text-align: center;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+
+      /* Buttons */
+      .wz-btns {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .wz-btn {
+        flex: 1;
+        padding: 13px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.92rem;
+        transition: all 0.2s;
+      }
+      .wz-btn-primary {
+        background: var(--gradient1);
+        color: #fff;
+      }
+      .wz-btn-primary:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+      }
+      .wz-btn-secondary {
+        background: var(--surface2);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+      .wz-btn-secondary:hover {
+        background: var(--surface3);
+      }
+      .wz-btn-skip {
+        background: none;
+        color: var(--text3);
+        font-size: 0.82rem;
+        padding: 8px;
+        flex: none;
+      }
+
+      /* Theme float */
+      .theme-float {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: var(--text);
+      }
+      .theme-float:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* Summary card */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .summary-item {
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--surface);
+      }
+      .summary-item .si-label {
+        font-size: 0.72rem;
+        color: var(--text3);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .summary-item .si-value {
+        font-size: 0.92rem;
+        font-weight: 600;
+        word-break: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-scene">
+      <div class="orb"></div>
+      <div class="orb"></div>
+    </div>
+    <button class="theme-float" onclick="toggleTheme()" id="themeBtn">
+      ☀️
+    </button>
+
+    <div class="wz-container">
+      <div class="wz-card">
+        <div class="wz-header">
+          <h1 id="wzTitle">Let's set up your profile</h1>
+          <p id="wzSub">Step 1 of 4 — Personal Info</p>
+        </div>
+        <div class="wz-steps" id="wzSteps"></div>
+
+        <!-- STEP 1: Personal Info -->
+        <div class="wz-section active" id="step1">
+          <div class="photo-upload">
+            <div
+              class="photo-preview"
+              id="photoPreview"
+              onclick="document.getElementById('photoInput').click()"
+            >
+              📷
+            </div>
+            <input
+              type="file"
+              id="photoInput"
+              accept="image/*"
+              style="display: none"
+              onchange="handlePhoto(this)"
+            />
+            <div class="photo-upload-text">
+              <span onclick="document.getElementById('photoInput').click()"
+                >Upload photo</span
+              ><br />
+              <small style="color: var(--text3)"
+                >Optional — click the circle</small
+              >
+            </div>
+          </div>
+          <div class="fg">
+            <label>Full Name</label>
+            <input
+              type="text"
+              class="fi"
+              id="pName"
+              placeholder="e.g. Arjun Sharma"
+              maxlength="40"
+            />
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Email</label>
+              <input
+                type="email"
+                class="fi"
+                id="pEmail"
+                placeholder="you@email.com"
+              />
+            </div>
+            <div class="fg">
+              <label>Phone</label>
+              <input
+                type="tel"
+                class="fi"
+                id="pPhone"
+                placeholder="+91 98765 43210"
+              />
+            </div>
+          </div>
+          <div class="fg">
+            <label>Short Bio <span class="hint">(optional)</span></label>
+            <textarea
+              class="fi"
+              id="pBio"
+              placeholder="Tell us about yourself in a line or two..."
+              rows="2"
+              maxlength="160"
+            ></textarea>
+          </div>
+          <div class="wz-btns">
+            <button class="wz-btn wz-btn-primary" onclick="goStep(2)">
+              Next — Education →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Education -->
+        <div class="wz-section" id="step2">
+          <div class="fg">
+            <label>Qualification</label>
+            <select class="fi" id="pQual">
+              <option value="">Select qualification</option>
+              <option>B.Tech / B.E.</option>
+              <option>BCA</option>
+              <option>B.Sc (CS/IT)</option>
+              <option>MCA</option>
+              <option>M.Tech / M.E.</option>
+              <option>M.Sc (CS/IT)</option>
+              <option>Diploma</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>College / University</label>
+            <input
+              type="text"
+              class="fi"
+              id="pCollege"
+              placeholder="e.g. VIT Pune, NIT Trichy..."
+            />
+          </div>
+          <div class="fg-row">
+            <div class="fg">
+              <label>Branch</label>
+              <select class="fi" id="pBranch">
+                <option value="">Select branch</option>
+                <option>Computer Science (CSE)</option>
+                <option>Information Technology (IT)</option>
+                <option>Electronics (ECE)</option>
+                <option>Electrical (EEE)</option>
+                <option>Mechanical</option>
+                <option>Civil</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Year</label>
+              <select class="fi" id="pYear">
+                <option value="">Select year</option>
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+                <option>Graduated</option>
+                <option>Post Graduate</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label
+              >CGPA / Percentage <span class="hint">(optional)</span></label
+            >
+            <input
+              type="text"
+              class="fi"
+              id="pCgpa"
+              placeholder="e.g. 8.2 or 78%"
+            />
+          </div>
+          <div class="wz-btns">
+            <button class="wz-btn wz-btn-secondary" onclick="goStep(1)">
+              ← Back
+            </button>
+            <button class="wz-btn wz-btn-primary" onclick="goStep(3)">
+              Next — Goals →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Goals -->
+        <div class="wz-section" id="step3">
+          <div class="fg">
+            <label>What exams do you want to prepare for?</label>
+            <p class="hint" style="margin-bottom: 10px">
+              Select all that apply
+            </p>
+            <div class="chip-grid" id="examChips"></div>
+          </div>
+          <div class="fg" style="margin-top: 20px">
+            <label>Target companies for placement?</label>
+            <p class="hint" style="margin-bottom: 10px">
+              Select all that apply
+            </p>
+            <div class="chip-grid" id="companyChips"></div>
+          </div>
+          <div class="toggle-row" style="margin-top: 20px">
+            <div>
+              <div class="toggle-label">Interview Preparation</div>
+              <div class="toggle-sub">
+                Prepare for all interview rounds (Aptitude, Technical, HR)
+              </div>
+            </div>
+            <div
+              class="toggle-switch"
+              id="interviewToggle"
+              onclick="toggleSwitch(this)"
+            ></div>
+          </div>
+          <div class="fg" style="margin-top: 14px">
+            <label>Career Goal <span class="hint">(optional)</span></label>
+            <select class="fi" id="pGoal">
+              <option value="">Select career goal</option>
+              <option>Software Developer / Engineer</option>
+              <option>Data Scientist / Analyst</option>
+              <option>DevOps / Cloud Engineer</option>
+              <option>Full-Stack Developer</option>
+              <option>Product Manager</option>
+              <option>Govt. Job (GATE / SSC)</option>
+              <option>Higher Studies (MS abroad)</option>
+              <option>Competitive Programming</option>
+              <option>Freelance / Startup</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div class="wz-btns">
+            <button class="wz-btn wz-btn-secondary" onclick="goStep(2)">
+              ← Back
+            </button>
+            <button class="wz-btn wz-btn-primary" onclick="goStep(4)">
+              Next — Schedule →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Schedule & Confirm -->
+        <div class="wz-section" id="step4">
+          <div class="fg">
+            <label>How many hours can you study daily?</label>
+            <div class="range-value" id="hoursVal">2 hours</div>
+            <div class="range-container">
+              <input
+                type="range"
+                id="pHours"
+                min="1"
+                max="10"
+                value="2"
+                oninput="
+                  document.getElementById('hoursVal').textContent =
+                    this.value + ' hour' + (this.value > 1 ? 's' : '')
+                "
+              />
+            </div>
+          </div>
+          <div class="fg">
+            <label>Preferred study time?</label>
+            <div class="time-grid" id="timeGrid"></div>
+          </div>
+
+          <div style="margin-top: 24px">
+            <label
+              style="
+                font-weight: 600;
+                font-size: 0.88rem;
+                margin-bottom: 12px;
+                display: block;
+              "
+              >Your Profile Summary</label
+            >
+            <div class="summary-grid" id="summaryGrid"></div>
+          </div>
+
+          <div class="wz-btns">
+            <button class="wz-btn wz-btn-secondary" onclick="goStep(3)">
+              ← Back
+            </button>
+            <button class="wz-btn wz-btn-primary" onclick="finishSetup()">
+              🚀 Start Learning
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      const TOTAL_STEPS = 4;
+      let currentStep = 1;
+      let selectedExams = [];
+      let selectedCompanies = [];
+      let interviewPrep = false;
+      let selectedTime = "morning";
+
+      // Theme
+      (function () {
+        try {
+          const t = state.theme || "dark";
+          document.documentElement.setAttribute("data-theme", t);
+          document.getElementById("themeBtn").textContent =
+            t === "dark" ? "☀️" : "🌙";
+        } catch (_) {}
+      })();
+      function toggleTheme() {
+        const h = document.documentElement,
+          c = h.getAttribute("data-theme"),
+          n = c === "dark" ? "light" : "dark";
+        h.setAttribute("data-theme", n);
+        document.getElementById("themeBtn").textContent =
+          n === "dark" ? "☀️" : "🌙";
+        state.theme = n;
+        saveState();
+      }
+
+      // Pre-fill from state, demo user, or backend
+      (async function () {
+        try {
+          // Try loading from backend first (most authoritative)
+          if (window.API && API.isLoggedIn()) {
+            try {
+              const { user } = await API.getMe();
+              if (user) {
+                if (user.name) state.name = user.name;
+                if (user.email) state.email = user.email;
+                saveState();
+              }
+            } catch (_) {}
+          }
+
+          // Fallback: demo user from localStorage
+          const demo = JSON.parse(
+            localStorage.getItem("lp_demo_user") || "null",
+          );
+          if (demo) {
+            if (demo.name) document.getElementById("pName").value = demo.name;
+            if (demo.email)
+              document.getElementById("pEmail").value = demo.email;
+            if (demo.avatarColor) state.avatarColor = demo.avatarColor;
+          }
+
+          // Finally, apply from state
+          if (state.name) document.getElementById("pName").value = state.name;
+          if (state.email)
+            document.getElementById("pEmail").value = state.email;
+          if (state.phone)
+            document.getElementById("pPhone").value = state.phone;
+        } catch (_) {}
+      })();
+
+      // Step dots
+      function renderDots() {
+        const c = document.getElementById("wzSteps");
+        c.innerHTML = "";
+        for (let i = 1; i <= TOTAL_STEPS; i++) {
+          const d = document.createElement("div");
+          d.className =
+            "wz-step-dot" +
+            (i === currentStep ? " active" : "") +
+            (i < currentStep ? " done" : "");
+          c.appendChild(d);
+        }
+      }
+      renderDots();
+
+      const STEP_META = [
+        null,
+        {
+          title: "Personal Information",
+          sub: "Step 1 of 4 — Tell us about yourself",
+        },
+        {
+          title: "Education Details",
+          sub: "Step 2 of 4 — Your academic background",
+        },
+        {
+          title: "Career Goals",
+          sub: "Step 3 of 4 — What do you want to achieve?",
+        },
+        { title: "Study Schedule", sub: "Step 4 of 4 — Plan your routine" },
+      ];
+
+      function goStep(n) {
+        if (n < 1 || n > TOTAL_STEPS) return;
+        // Save current step data
+        saveCurrentStep();
+        // Switch
+        document
+          .getElementById("step" + currentStep)
+          .classList.remove("active");
+        currentStep = n;
+        document.getElementById("step" + n).classList.add("active");
+        document.getElementById("wzTitle").textContent = STEP_META[n].title;
+        document.getElementById("wzSub").textContent = STEP_META[n].sub;
+        renderDots();
+        if (n === 4) buildSummary();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function saveCurrentStep() {
+        // Collect whatever is on-screen
+      }
+
+      // Exam chips
+      const EXAMS = [
+        { id: "tcs-nqt", label: "TCS NQT" },
+        { id: "infosys", label: "Infosys" },
+        { id: "wipro", label: "Wipro NLTH" },
+        { id: "cognizant", label: "Cognizant GenC" },
+        { id: "accenture", label: "Accenture" },
+        { id: "gate-cs", label: "GATE CS/IT" },
+        { id: "dsa-placement", label: "DSA / Coding" },
+        { id: "amcat", label: "AMCAT" },
+        { id: "cocubes", label: "CoCubes / mettl" },
+        { id: "govt", label: "Govt. Exams" },
+      ];
+      const COMPANIES = [
+        { id: "tcs", label: "TCS" },
+        { id: "infosys", label: "Infosys" },
+        { id: "wipro", label: "Wipro" },
+        { id: "cognizant", label: "Cognizant" },
+        { id: "accenture", label: "Accenture" },
+        { id: "hcl", label: "HCL" },
+        { id: "capgemini", label: "Capgemini" },
+        { id: "deloitte", label: "Deloitte" },
+        { id: "google", label: "Google" },
+        { id: "amazon", label: "Amazon" },
+        { id: "microsoft", label: "Microsoft" },
+        { id: "flipkart", label: "Flipkart" },
+      ];
+
+      function renderChips(items, containerId, arr) {
+        const c = document.getElementById(containerId);
+        items.forEach((item) => {
+          const el = document.createElement("div");
+          el.className = "chip" + (arr.includes(item.id) ? " selected" : "");
+          el.textContent = item.label;
+          el.onclick = () => {
+            if (arr.includes(item.id)) {
+              arr.splice(arr.indexOf(item.id), 1);
+              el.classList.remove("selected");
+            } else {
+              arr.push(item.id);
+              el.classList.add("selected");
+            }
+          };
+          c.appendChild(el);
+        });
+      }
+      renderChips(EXAMS, "examChips", selectedExams);
+      renderChips(COMPANIES, "companyChips", selectedCompanies);
+
+      // Toggle switch
+      function toggleSwitch(el) {
+        el.classList.toggle("on");
+        interviewPrep = el.classList.contains("on");
+      }
+
+      // Time grid
+      const TIMES = [
+        { id: "morning", icon: "🌅", label: "Morning" },
+        { id: "afternoon", icon: "☀️", label: "Afternoon" },
+        { id: "evening", icon: "🌆", label: "Evening" },
+        { id: "night", icon: "🌙", label: "Night" },
+        { id: "late-night", icon: "🦉", label: "Late Night" },
+        { id: "flexible", icon: "🔄", label: "Flexible" },
+      ];
+      (function () {
+        const g = document.getElementById("timeGrid");
+        TIMES.forEach((t) => {
+          const d = document.createElement("div");
+          d.className =
+            "time-card" + (t.id === selectedTime ? " selected" : "");
+          d.innerHTML = `<div class="tc-icon">${t.icon}</div><div class="tc-label">${t.label}</div>`;
+          d.onclick = () => {
+            g.querySelectorAll(".time-card").forEach((c) =>
+              c.classList.remove("selected"),
+            );
+            d.classList.add("selected");
+            selectedTime = t.id;
+          };
+          g.appendChild(d);
+        });
+      })();
+
+      // Photo handling
+      function handlePhoto(input) {
+        if (!input.files || !input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // Resize for storage
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const size = 200;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext("2d");
+            const min = Math.min(img.width, img.height);
+            const sx = (img.width - min) / 2,
+              sy = (img.height - min) / 2;
+            ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+            document.getElementById("photoPreview").innerHTML =
+              `<img src="${dataUrl}">`;
+            state.photo = dataUrl;
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+
+      // Build summary
+      function buildSummary() {
+        const name = document.getElementById("pName").value.trim() || "Not set";
+        const email =
+          document.getElementById("pEmail").value.trim() || "Not set";
+        const qual = document.getElementById("pQual").value || "Not set";
+        const college =
+          document.getElementById("pCollege").value.trim() || "Not set";
+        const branch = document.getElementById("pBranch").value || "Not set";
+        const year = document.getElementById("pYear").value || "Not set";
+        const hours = document.getElementById("pHours").value;
+        const exams = selectedExams.length
+          ? selectedExams
+              .map((e) => EXAMS.find((x) => x.id === e)?.label || e)
+              .join(", ")
+          : "None selected";
+        const companies = selectedCompanies.length
+          ? selectedCompanies
+              .map((c) => COMPANIES.find((x) => x.id === c)?.label || c)
+              .join(", ")
+          : "None selected";
+        const goal = document.getElementById("pGoal").value || "Not set";
+        const time =
+          TIMES.find((t) => t.id === selectedTime)?.label || selectedTime;
+
+        const items = [
+          { label: "Name", value: name },
+          { label: "Email", value: email },
+          { label: "Education", value: `${qual} — ${branch}` },
+          { label: "College", value: college },
+          { label: "Year", value: year },
+          { label: "Target Exams", value: exams },
+          { label: "Target Companies", value: companies },
+          { label: "Interview Prep", value: interviewPrep ? "Yes ✅" : "No" },
+          { label: "Career Goal", value: goal },
+          { label: "Study Hours", value: hours + " hr/day" },
+          { label: "Preferred Time", value: time },
+        ];
+
+        document.getElementById("summaryGrid").innerHTML = items
+          .map(
+            (i) =>
+              `<div class="summary-item"><div class="si-label">${i.label}</div><div class="si-value">${i.value}</div></div>`,
+          )
+          .join("");
+      }
+
+      // Finish
+      function finishSetup() {
+        state.name =
+          document.getElementById("pName").value.trim() ||
+          state.name ||
+          "Learner";
+        state.email =
+          document.getElementById("pEmail").value.trim() || state.email;
+        state.phone = document.getElementById("pPhone").value.trim();
+        state.bio = document.getElementById("pBio").value.trim();
+        state.qualification = document.getElementById("pQual").value;
+        state.college = document.getElementById("pCollege").value.trim();
+        state.branch = document.getElementById("pBranch").value;
+        state.year = document.getElementById("pYear").value;
+        state.cgpa = document.getElementById("pCgpa").value.trim();
+        state.targetExams = selectedExams;
+        state.targetCompanies = selectedCompanies;
+        state.interviewPrep = interviewPrep;
+        state.careerGoal = document.getElementById("pGoal").value;
+        state.dailyHours =
+          parseInt(document.getElementById("pHours").value) || 2;
+        state.preferredTime = selectedTime;
+        state.onboarded = true;
+        state.profileComplete = true;
+        if (!state.joinDate)
+          state.joinDate = new Date().toLocaleDateString("en-IN", {
+            year: "numeric",
+            month: "long",
+          });
+        // Clean demo user
+        localStorage.removeItem("lp_demo_user");
+        saveState();
+
+        // Sync profile to backend if authenticated
+        if (window.API && API.isLoggedIn()) {
+          API.completeProfileSetup({
+            name: state.name,
+            phone: state.phone,
+            qualification: state.qualification,
+            college: state.college,
+            branch: state.branch,
+            year: state.year,
+            cgpa: state.cgpa,
+            targetExams: state.targetExams,
+            targetCompanies: state.targetCompanies,
+            interviewPrep: state.interviewPrep,
+            careerGoal: state.careerGoal,
+            dailyHours: state.dailyHours,
+            preferredTime: state.preferredTime,
+            level: state.level || "beginner",
+          }).catch(() => {
+            /* continue even if sync fails */
+          });
+        }
+
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>

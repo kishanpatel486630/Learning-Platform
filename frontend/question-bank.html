@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Question Bank</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .qb-hero {
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .qb-hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -8%;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .qb-hero h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+      .qb-hero p {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .qb-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+      .qb-stat {
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        text-align: center;
+      }
+      .qb-stat-num {
+        font-size: 1.6rem;
+        font-weight: 800;
+        font-family: "Syne", sans-serif;
+        color: var(--accent);
+      }
+      .qb-stat-label {
+        font-size: 0.75rem;
+        color: var(--text3);
+      }
+
+      .qb-controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .qb-search {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px 14px 10px 36px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.88rem;
+        outline: none;
+      }
+      .qb-search:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .qb-select {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.85rem;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .q-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .q-card {
+        padding: 20px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        transition: all 0.2s;
+      }
+      .q-card:hover {
+        border-color: var(--accent);
+      }
+      .q-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 10px;
+        gap: 12px;
+      }
+      .q-num {
+        font-size: 0.72rem;
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .q-diff {
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 700;
+      }
+      .q-diff.easy {
+        background: rgba(16, 185, 129, 0.12);
+        color: var(--success);
+      }
+      .q-diff.medium {
+        background: rgba(245, 158, 11, 0.12);
+        color: var(--warning);
+      }
+      .q-diff.hard {
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--danger);
+      }
+      .q-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        line-height: 1.6;
+      }
+      .q-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      @media (max-width: 600px) {
+        .q-options {
+          grid-template-columns: 1fr;
+        }
+      }
+      .q-opt {
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .q-opt:hover {
+        border-color: var(--accent);
+      }
+      .q-opt.selected {
+        border-color: var(--accent);
+        background: rgba(124, 58, 237, 0.08);
+      }
+      .q-opt.correct {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.08);
+      }
+      .q-opt.wrong {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.08);
+      }
+      .q-opt-letter {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: var(--surface2);
+        flex-shrink: 0;
+      }
+      .q-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .q-action-btn {
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text2);
+        cursor: pointer;
+        border: 1px solid var(--border);
+        transition: all 0.15s;
+      }
+      .q-action-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .q-action-btn.bookmarked {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .q-tags {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .q-tag {
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 0.68rem;
+        background: var(--surface);
+        color: var(--text3);
+      }
+      .q-explanation {
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--surface);
+        border-left: 3px solid var(--accent);
+        margin-top: 10px;
+        font-size: 0.84rem;
+        line-height: 1.6;
+        display: none;
+      }
+      .q-explanation.show {
+        display: block;
+      }
+
+      .load-more {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .ai-gen-box {
+        padding: 20px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        margin-bottom: 24px;
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .ai-gen-box p {
+        flex: 1;
+        font-size: 0.88rem;
+        min-width: 200px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--text3);
+      }
+      .empty-state p {
+        margin-top: 8px;
+        font-size: 0.88rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Question Bank</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="qb-hero">
+          <h1>❓ Question Bank</h1>
+          <p>
+            1000+ questions from previous year exams & AI-generated. Practice,
+            bookmark, and track.
+          </p>
+        </div>
+
+        <div class="qb-stats" id="qbStats">
+          <div class="qb-stat">
+            <div class="qb-stat-num" id="totalQCount">0</div>
+            <div class="qb-stat-label">Total Questions</div>
+          </div>
+          <div class="qb-stat">
+            <div class="qb-stat-num" id="solvedQCount">0</div>
+            <div class="qb-stat-label">Solved</div>
+          </div>
+          <div class="qb-stat">
+            <div class="qb-stat-num" id="bookmarkCount">0</div>
+            <div class="qb-stat-label">Bookmarked</div>
+          </div>
+          <div class="qb-stat">
+            <div class="qb-stat-num" id="accuracyPct">0%</div>
+            <div class="qb-stat-label">Accuracy</div>
+          </div>
+        </div>
+
+        <!-- AI Generate -->
+        <div class="ai-gen-box">
+          <p>
+            🤖 <strong>Generate custom questions</strong> — Enter a topic and
+            let AI create practice questions instantly.
+          </p>
+          <input
+            type="text"
+            class="qb-search"
+            id="aiTopic"
+            placeholder="e.g. Binary Search, SQL Joins, Profit & Loss…"
+            style="flex: none; width: 250px"
+          />
+          <select class="qb-select" id="aiCount">
+            <option value="5">5 questions</option>
+            <option value="10" selected>10 questions</option>
+            <option value="15">15 questions</option>
+          </select>
+          <button
+            class="lp-btn lp-btn-primary lp-btn-sm"
+            onclick="generateAIQuestions()"
+          >
+            Generate 🤖
+          </button>
+        </div>
+
+        <!-- Controls -->
+        <div class="qb-controls">
+          <input
+            type="text"
+            class="qb-search"
+            id="qbSearchInput"
+            placeholder="🔍 Search questions…"
+            oninput="filterQuestions()"
+          />
+          <select
+            class="qb-select"
+            id="qbCategory"
+            onchange="filterQuestions()"
+          >
+            <option value="all">All Categories</option>
+            <option value="aptitude">Aptitude</option>
+            <option value="reasoning">Reasoning</option>
+            <option value="verbal">Verbal</option>
+            <option value="coding">Coding</option>
+          </select>
+          <select
+            class="qb-select"
+            id="qbDifficulty"
+            onchange="filterQuestions()"
+          >
+            <option value="all">All Difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+          <select class="qb-select" id="qbFilter" onchange="filterQuestions()">
+            <option value="all">All</option>
+            <option value="bookmarked">Bookmarked</option>
+            <option value="unsolved">Unsolved</option>
+            <option value="solved">Solved</option>
+          </select>
+        </div>
+
+        <!-- Question List -->
+        <div class="q-list" id="qList"></div>
+        <div class="load-more" id="loadMore" style="display: none">
+          <button class="lp-btn lp-btn-secondary" onclick="loadMoreQuestions()">
+            Load More Questions
+          </button>
+        </div>
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div style="font-size: 2.5rem">📭</div>
+          <p>No questions found. Try generating some with AI!</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/data/exams-data.js"></script>
+    <script src="js/gemini-api.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("questions");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      let allQuestions = [];
+      let displayedCount = 0;
+      const PAGE_SIZE = 20;
+
+      // Load all sample questions
+      function loadAllQuestions() {
+        allQuestions = [];
+        let idx = 0;
+        if (typeof SAMPLE_QUESTIONS !== "undefined") {
+          Object.entries(SAMPLE_QUESTIONS).forEach(([cat, qs]) => {
+            qs.forEach((q) => {
+              allQuestions.push({
+                ...q,
+                id: "sq_" + idx++,
+                category: cat,
+                source: "sample",
+              });
+            });
+          });
+        }
+        // Load any saved AI-generated questions
+        const saved = JSON.parse(
+          localStorage.getItem("lp_custom_questions") || "[]",
+        );
+        saved.forEach((q) => {
+          allQuestions.push({ ...q, id: q.id || "ai_" + idx++ });
+        });
+        updateStats();
+      }
+      loadAllQuestions();
+
+      function updateStats() {
+        document.getElementById("totalQCount").textContent =
+          allQuestions.length;
+        const solved = Object.keys(state.answeredQuestions || {}).length;
+        document.getElementById("solvedQCount").textContent = solved;
+        document.getElementById("bookmarkCount").textContent = (
+          state.bookmarkedQuestions || []
+        ).length;
+        let correct = 0,
+          total = 0;
+        Object.entries(state.answeredQuestions || {}).forEach(([id, ans]) => {
+          total++;
+          if (ans.correct) correct++;
+        });
+        document.getElementById("accuracyPct").textContent = total
+          ? Math.round((correct / total) * 100) + "%"
+          : "0%";
+      }
+
+      function filterQuestions() {
+        displayedCount = 0;
+        renderQuestions();
+      }
+
+      function renderQuestions() {
+        const search = document
+          .getElementById("qbSearchInput")
+          .value.toLowerCase();
+        const cat = document.getElementById("qbCategory").value;
+        const diff = document.getElementById("qbDifficulty").value;
+        const filter = document.getElementById("qbFilter").value;
+
+        let filtered = allQuestions.filter((q) => {
+          if (search && !q.question.toLowerCase().includes(search))
+            return false;
+          if (cat !== "all" && q.category !== cat) return false;
+          if (diff !== "all" && q.difficulty !== diff) return false;
+          if (
+            filter === "bookmarked" &&
+            !(state.bookmarkedQuestions || []).includes(q.id)
+          )
+            return false;
+          if (filter === "solved" && !state.answeredQuestions?.[q.id])
+            return false;
+          if (filter === "unsolved" && state.answeredQuestions?.[q.id])
+            return false;
+          return true;
+        });
+
+        const toShow = filtered.slice(0, displayedCount + PAGE_SIZE);
+        displayedCount = toShow.length;
+
+        const list = document.getElementById("qList");
+        list.innerHTML = "";
+        const letters = ["A", "B", "C", "D", "E", "F"];
+
+        if (toShow.length === 0) {
+          document.getElementById("emptyState").style.display = "";
+          document.getElementById("loadMore").style.display = "none";
+          return;
+        }
+        document.getElementById("emptyState").style.display = "none";
+
+        toShow.forEach((q, qIdx) => {
+          const answered = state.answeredQuestions?.[q.id];
+          const bookmarked = (state.bookmarkedQuestions || []).includes(q.id);
+          const card = document.createElement("div");
+          card.className = "q-card";
+          card.id = "qcard_" + q.id;
+
+          let optionsHtml = (q.options || [])
+            .map((opt, i) => {
+              let cls = "q-opt";
+              if (answered) {
+                if (i === q.correct) cls += " correct";
+                else if (answered.selected === i && i !== q.correct)
+                  cls += " wrong";
+              }
+              return `<div class="${cls}" data-qid="${q.id}" data-idx="${i}" onclick="answerQuestion('${q.id}',${i})"><div class="q-opt-letter">${letters[i]}</div><span>${opt}</span></div>`;
+            })
+            .join("");
+
+          card.innerHTML = `
+          <div class="q-card-header">
+            <div><div class="q-num">#${qIdx + 1} · ${q.category || "general"}</div></div>
+            <div class="q-diff ${q.difficulty || "medium"}">${q.difficulty || "medium"}</div>
+          </div>
+          <div class="q-text">${q.question}</div>
+          <div class="q-tags">${(q.tags || [q.category]).map((t) => `<span class="q-tag">${t}</span>`).join("")}</div>
+          <div class="q-options">${optionsHtml}</div>
+          <div class="q-actions">
+            <button class="q-action-btn ${bookmarked ? "bookmarked" : ""}" onclick="toggleBookmark('${q.id}',this)">🔖 ${bookmarked ? "Bookmarked" : "Bookmark"}</button>
+            <button class="q-action-btn" onclick="toggleExplanation('${q.id}')">💡 Explanation</button>
+            <button class="q-action-btn" onclick="getAIHint('${q.id}')">🤖 AI Hint</button>
+          </div>
+          <div class="q-explanation" id="exp_${q.id}">${answered || q.explanation ? q.explanation || "No explanation available." : "Answer the question to see the explanation."}</div>
+        `;
+          list.appendChild(card);
+        });
+
+        document.getElementById("loadMore").style.display =
+          filtered.length > displayedCount ? "" : "none";
+      }
+      renderQuestions();
+
+      function answerQuestion(qId, idx) {
+        if (state.answeredQuestions?.[qId]) return; // Already answered
+        const q = allQuestions.find((x) => x.id === qId);
+        if (!q) return;
+
+        const isCorrect = idx === q.correct;
+        if (!state.answeredQuestions) state.answeredQuestions = {};
+        state.answeredQuestions[qId] = {
+          selected: idx,
+          correct: isCorrect,
+          date: new Date().toISOString(),
+        };
+        addXP(isCorrect ? 10 : 2, "question-bank");
+        updateStats();
+
+        // Re-render just this card's options
+        const card = document.getElementById("qcard_" + qId);
+        if (card) {
+          card.querySelectorAll(".q-opt").forEach((opt) => {
+            const i = parseInt(opt.dataset.idx);
+            opt.classList.remove("selected");
+            if (i === q.correct) opt.classList.add("correct");
+            else if (i === idx && i !== q.correct) opt.classList.add("wrong");
+          });
+          // Show explanation
+          const exp = document.getElementById("exp_" + qId);
+          if (exp) {
+            exp.textContent = q.explanation || "No explanation available.";
+            exp.classList.add("show");
+          }
+        }
+        document.getElementById("topXp").textContent = state.xp || 0;
+      }
+
+      function toggleBookmark(qId, btn) {
+        if (!state.bookmarkedQuestions) state.bookmarkedQuestions = [];
+        const idx = state.bookmarkedQuestions.indexOf(qId);
+        if (idx >= 0) {
+          state.bookmarkedQuestions.splice(idx, 1);
+          btn.classList.remove("bookmarked");
+          btn.textContent = "🔖 Bookmark";
+        } else {
+          state.bookmarkedQuestions.push(qId);
+          btn.classList.add("bookmarked");
+          btn.textContent = "🔖 Bookmarked";
+        }
+        saveState();
+        updateStats();
+      }
+
+      function toggleExplanation(qId) {
+        const el = document.getElementById("exp_" + qId);
+        if (el) el.classList.toggle("show");
+      }
+
+      async function getAIHint(qId) {
+        if (!isGeminiConfigured()) {
+          lpToast("Add Gemini API key in Settings!");
+          return;
+        }
+        const q = allQuestions.find((x) => x.id === qId);
+        if (!q) return;
+        try {
+          const hint = await aiGetHint(q.question, q.category || "general");
+          const el = document.getElementById("exp_" + qId);
+          if (el) {
+            el.innerHTML = "🤖 <strong>AI Hint:</strong> " + hint;
+            el.classList.add("show");
+          }
+        } catch (e) {
+          lpToast("Failed to get hint.");
+        }
+      }
+
+      async function generateAIQuestions() {
+        const topic = document.getElementById("aiTopic").value.trim();
+        if (!topic) {
+          lpToast("Enter a topic first!");
+          return;
+        }
+        if (!isGeminiConfigured()) {
+          lpToast("Add Gemini API key in Settings first!");
+          return;
+        }
+
+        const count = parseInt(document.getElementById("aiCount").value);
+        lpToast("Generating questions…");
+
+        try {
+          const questions = await aiGenerateQuestions(topic, "General", count);
+          const saved = JSON.parse(
+            localStorage.getItem("lp_custom_questions") || "[]",
+          );
+          const newQs = questions.map((q, i) => ({
+            ...q,
+            id: "ai_" + Date.now() + "_" + i,
+            category: "ai-generated",
+            source: "ai",
+            tags: [topic, "AI Generated"],
+          }));
+          saved.push(...newQs);
+          localStorage.setItem("lp_custom_questions", JSON.stringify(saved));
+
+          // Reload
+          loadAllQuestions();
+          renderQuestions();
+          lpToast(`Generated ${newQs.length} questions! 🎉`);
+        } catch (e) {
+          lpToast("Failed to generate. Check API key.");
+        }
+      }
+
+      function loadMoreQuestions() {
+        renderQuestions();
+      }
+    </script>
+  </body>
+</html>

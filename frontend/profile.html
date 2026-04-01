@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Profile</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 28px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, var(--card-bg), var(--surface));
+        border: 1px solid var(--card-border);
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .ph-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 3px solid var(--accent);
+      }
+      .ph-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .ph-info {
+        flex: 1;
+        min-width: 200px;
+      }
+      .ph-name {
+        font-family: "Syne", sans-serif;
+        font-weight: 800;
+        font-size: 1.5rem;
+        margin-bottom: 2px;
+      }
+      .ph-bio {
+        font-size: 0.85rem;
+        color: var(--text2);
+        margin-bottom: 8px;
+      }
+      .ph-badges {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .ph-badge {
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: var(--surface2);
+        color: var(--text2);
+      }
+      .ph-badge-accent {
+        background: rgba(124, 58, 237, 0.15);
+        color: var(--accent);
+      }
+      .ph-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .p-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .p-card {
+        padding: 22px;
+        border-radius: 16px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .p-card h4 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.92rem;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .p-field {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .p-field:last-child {
+        border-bottom: none;
+      }
+      .p-label {
+        font-size: 0.82rem;
+        color: var(--text3);
+      }
+      .p-value {
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-align: right;
+      }
+
+      .p-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .p-tag {
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: rgba(124, 58, 237, 0.12);
+        color: var(--accent);
+      }
+      .p-tag-company {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+      }
+
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+      .sb-stat {
+        text-align: center;
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+      }
+      .sb-stat-val {
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: var(--accent);
+      }
+      .sb-stat-label {
+        font-size: 0.72rem;
+        color: var(--text3);
+        margin-top: 3px;
+      }
+
+      .ach-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+      }
+      .ach-card {
+        padding: 16px;
+        border-radius: 14px;
+        background: var(--surface);
+        text-align: center;
+        transition: all 0.2s;
+      }
+      .ach-card.earned {
+        background: rgba(124, 58, 237, 0.1);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+      }
+      .ach-card.locked {
+        opacity: 0.4;
+      }
+      .ach-icon {
+        font-size: 1.5rem;
+        margin-bottom: 4px;
+      }
+      .ach-name {
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .ach-desc {
+        font-size: 0.65rem;
+        color: var(--text3);
+        margin-top: 2px;
+      }
+
+      .edit-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .edit-overlay.active {
+        display: flex;
+      }
+      .edit-modal {
+        width: 100%;
+        max-width: 500px;
+        max-height: 85vh;
+        overflow-y: auto;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 24px;
+      }
+      .edit-modal h3 {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .ef {
+        margin-bottom: 14px;
+      }
+      .ef label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text2);
+        margin-bottom: 4px;
+      }
+      .ef input,
+      .ef textarea,
+      .ef select {
+        width: 100%;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text);
+        font-size: 0.85rem;
+        outline: none;
+        font-family: "DM Sans", sans-serif;
+      }
+      .ef input:focus,
+      .ef textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--input-focus);
+      }
+      .ef textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+      .edit-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Profile</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="profile-header">
+          <div class="ph-avatar" id="phAvatar"></div>
+          <div class="ph-info">
+            <div class="ph-name" id="phName">—</div>
+            <div class="ph-bio" id="phBio">—</div>
+            <div class="ph-badges" id="phBadges"></div>
+          </div>
+          <div class="ph-actions">
+            <button
+              class="lp-btn lp-btn-primary lp-btn-sm"
+              onclick="openEditModal()"
+            >
+              ✏️ Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar"></div>
+
+        <div class="p-grid">
+          <div class="p-card">
+            <h4>📋 Personal Info</h4>
+            <div class="p-field">
+              <span class="p-label">Email</span
+              ><span class="p-value" id="pEmail">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Phone</span
+              ><span class="p-value" id="pPhone">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Member Since</span
+              ><span class="p-value" id="pJoined">—</span>
+            </div>
+          </div>
+          <div class="p-card">
+            <h4>🎓 Education</h4>
+            <div class="p-field">
+              <span class="p-label">Qualification</span
+              ><span class="p-value" id="pQual">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">College</span
+              ><span class="p-value" id="pCollege">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Branch</span
+              ><span class="p-value" id="pBranch">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Year</span
+              ><span class="p-value" id="pYear">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">CGPA</span
+              ><span class="p-value" id="pCgpa">—</span>
+            </div>
+          </div>
+          <div class="p-card">
+            <h4>🎯 Goals</h4>
+            <div class="p-field">
+              <span class="p-label">Career Goal</span
+              ><span class="p-value" id="pGoalText">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Daily Hours</span
+              ><span class="p-value" id="pHours">—</span>
+            </div>
+            <div class="p-field">
+              <span class="p-label">Level</span
+              ><span class="p-value" id="pLevel">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-grid">
+          <div class="p-card">
+            <h4>📝 Target Exams</h4>
+            <div class="p-tags" id="pExams"></div>
+          </div>
+          <div class="p-card">
+            <h4>🏢 Target Companies</h4>
+            <div class="p-tags" id="pCompanies"></div>
+          </div>
+        </div>
+
+        <div class="p-card" style="margin-bottom: 24px">
+          <h4
+            style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 0.92rem;
+              margin-bottom: 12px;
+            "
+          >
+            🏅 Achievements
+          </h4>
+          <div class="ach-grid" id="achGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="edit-overlay" id="editOverlay">
+      <div class="edit-modal">
+        <h3>Edit Profile</h3>
+        <div class="ef">
+          <label>Name</label>
+          <input type="text" id="editName" maxlength="60" />
+        </div>
+        <div class="ef">
+          <label>Bio</label>
+          <textarea
+            id="editBio"
+            maxlength="200"
+            placeholder="Tell something about yourself…"
+          ></textarea>
+        </div>
+        <div class="ef">
+          <label>Phone</label>
+          <input type="tel" id="editPhone" maxlength="15" />
+        </div>
+        <div class="ef">
+          <label>Qualification</label>
+          <select id="editQual">
+            <option value="">Select…</option>
+            <option value="10th">10th Pass</option>
+            <option value="12th">12th Pass</option>
+            <option value="Diploma">Diploma</option>
+            <option value="B.Tech/B.E.">B.Tech / B.E.</option>
+            <option value="BCA">BCA</option>
+            <option value="B.Sc">B.Sc</option>
+            <option value="MCA">MCA</option>
+            <option value="M.Tech">M.Tech</option>
+            <option value="MBA">MBA</option>
+            <option value="PhD">PhD</option>
+          </select>
+        </div>
+        <div class="ef">
+          <label>College</label>
+          <input type="text" id="editCollege" maxlength="100" />
+        </div>
+        <div class="ef">
+          <label>Branch</label>
+          <input type="text" id="editBranch" maxlength="60" />
+        </div>
+        <div class="ef">
+          <label>Year</label>
+          <select id="editYear">
+            <option value="">Select…</option>
+            <option value="1st Year">1st Year</option>
+            <option value="2nd Year">2nd Year</option>
+            <option value="3rd Year">3rd Year</option>
+            <option value="4th Year">4th Year</option>
+            <option value="Graduated">Graduated</option>
+          </select>
+        </div>
+        <div class="ef">
+          <label>CGPA</label>
+          <input
+            type="text"
+            id="editCgpa"
+            maxlength="5"
+            placeholder="e.g. 8.5"
+          />
+        </div>
+        <div class="ef">
+          <label>Career Goal</label>
+          <input
+            type="text"
+            id="editGoal"
+            maxlength="100"
+            placeholder="e.g. Software Engineer at Google"
+          />
+        </div>
+        <div class="edit-actions">
+          <button class="lp-btn lp-btn-secondary" onclick="closeEditModal()">
+            Cancel
+          </button>
+          <button class="lp-btn lp-btn-primary" onclick="saveProfile()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("profile");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      const ACHIEVEMENTS = [
+        {
+          id: "first-steps",
+          icon: "🚀",
+          name: "First Steps",
+          desc: "Complete your profile",
+          check: () => state.profileComplete,
+        },
+        {
+          id: "quiz-starter",
+          icon: "❓",
+          name: "Quiz Starter",
+          desc: "Answer 10 questions",
+          check: () => Object.keys(state.answeredQuestions || {}).length >= 10,
+        },
+        {
+          id: "quiz-master",
+          icon: "🧠",
+          name: "Quiz Master",
+          desc: "Answer 100 questions",
+          check: () => Object.keys(state.answeredQuestions || {}).length >= 100,
+        },
+        {
+          id: "streak-3",
+          icon: "🔥",
+          name: "On Fire",
+          desc: "3-day streak",
+          check: () => (state.streak || 0) >= 3,
+        },
+        {
+          id: "streak-7",
+          icon: "💎",
+          name: "Diamond Streak",
+          desc: "7-day streak",
+          check: () => (state.streak || 0) >= 7,
+        },
+        {
+          id: "xp-100",
+          icon: "⚡",
+          name: "XP Hunter",
+          desc: "Earn 100 XP",
+          check: () => (state.xp || 0) >= 100,
+        },
+        {
+          id: "xp-500",
+          icon: "🌟",
+          name: "Star Learner",
+          desc: "Earn 500 XP",
+          check: () => (state.xp || 0) >= 500,
+        },
+        {
+          id: "xp-1000",
+          icon: "👑",
+          name: "XP King",
+          desc: "Earn 1000 XP",
+          check: () => (state.xp || 0) >= 1000,
+        },
+        {
+          id: "noter",
+          icon: "📝",
+          name: "Note Taker",
+          desc: "Create 5 notes",
+          check: () => (state.notes || []).length >= 5,
+        },
+        {
+          id: "social",
+          icon: "👥",
+          name: "Social Butterfly",
+          desc: "Add 3 friends",
+          check: () => (state.friends || []).length >= 3,
+        },
+        {
+          id: "pomodoro",
+          icon: "🍅",
+          name: "Focus Master",
+          desc: "10 pomodoros",
+          check: () => (state.pomodorosTotal || 0) >= 10,
+        },
+        {
+          id: "planner",
+          icon: "📅",
+          name: "Planner",
+          desc: "Plan 7 days",
+          check: () => Object.keys(state.studyPlan || {}).length >= 7,
+        },
+      ];
+
+      function renderProfile() {
+        const avatarEl = document.getElementById("phAvatar");
+        if (state.photo) {
+          avatarEl.innerHTML = `<img src="${state.photo}" alt="">`;
+        } else {
+          avatarEl.style.background = state.avatarColor || "#7c3aed";
+          avatarEl.textContent = (state.name || "?")[0].toUpperCase();
+        }
+
+        document.getElementById("phName").textContent =
+          state.name || "Unknown User";
+        document.getElementById("phBio").textContent =
+          state.bio || "No bio yet";
+        document.getElementById("pEmail").textContent = state.email || "—";
+        document.getElementById("pPhone").textContent = state.phone || "—";
+        document.getElementById("pJoined").textContent = state.joinDate || "—";
+        document.getElementById("pQual").textContent =
+          state.qualification || "—";
+        document.getElementById("pCollege").textContent = state.college || "—";
+        document.getElementById("pBranch").textContent = state.branch || "—";
+        document.getElementById("pYear").textContent = state.year || "—";
+        document.getElementById("pCgpa").textContent = state.cgpa || "—";
+        document.getElementById("pGoalText").textContent =
+          state.careerGoal || "—";
+        document.getElementById("pHours").textContent =
+          (state.dailyHours || 1) + " hrs/day";
+        document.getElementById("pLevel").textContent =
+          (state.level || "beginner").charAt(0).toUpperCase() +
+          (state.level || "beginner").slice(1);
+
+        const earnedAch = ACHIEVEMENTS.filter((a) => a.check());
+        const badgesHtml = [
+          state.qualification
+            ? `<span class="ph-badge">${state.qualification}</span>`
+            : "",
+          state.year ? `<span class="ph-badge">${state.year}</span>` : "",
+          earnedAch.length > 0
+            ? `<span class="ph-badge ph-badge-accent">${earnedAch.length} Achievements</span>`
+            : "",
+          state.interviewPrep
+            ? '<span class="ph-badge ph-badge-accent">Interview Mode</span>'
+            : "",
+        ]
+          .filter(Boolean)
+          .join("");
+        document.getElementById("phBadges").innerHTML = badgesHtml;
+
+        const exams = state.targetExams || [];
+        document.getElementById("pExams").innerHTML =
+          exams.length > 0
+            ? exams.map((e) => `<span class="p-tag">${e}</span>`).join("")
+            : '<span style="font-size:.82rem;color:var(--text3)">None selected</span>';
+
+        const companies = state.targetCompanies || [];
+        document.getElementById("pCompanies").innerHTML =
+          companies.length > 0
+            ? companies
+                .map((c) => `<span class="p-tag p-tag-company">${c}</span>`)
+                .join("")
+            : '<span style="font-size:.82rem;color:var(--text3)">None selected</span>';
+
+        const answeredCount = Object.keys(state.answeredQuestions || {}).length;
+        const stats = [
+          { val: (state.xp || 0).toLocaleString(), label: "Total XP" },
+          { val: state.streak || 0, label: "Day Streak" },
+          { val: answeredCount, label: "Questions" },
+          { val: (state.notes || []).length, label: "Notes" },
+          { val: state.pomodorosTotal || 0, label: "Pomodoros" },
+          {
+            val: earnedAch.length + "/" + ACHIEVEMENTS.length,
+            label: "Achievements",
+          },
+        ];
+        document.getElementById("statsBar").innerHTML = stats
+          .map(
+            (s) => `
+        <div class="sb-stat">
+          <div class="sb-stat-val">${s.val}</div>
+          <div class="sb-stat-label">${s.label}</div>
+        </div>
+      `,
+          )
+          .join("");
+
+        document.getElementById("achGrid").innerHTML = ACHIEVEMENTS.map((a) => {
+          const earned = a.check();
+          return `
+          <div class="ach-card ${earned ? "earned" : "locked"}">
+            <div class="ach-icon">${a.icon}</div>
+            <div class="ach-name">${a.name}</div>
+            <div class="ach-desc">${a.desc}</div>
+          </div>
+        `;
+        }).join("");
+      }
+
+      function openEditModal() {
+        document.getElementById("editName").value = state.name || "";
+        document.getElementById("editBio").value = state.bio || "";
+        document.getElementById("editPhone").value = state.phone || "";
+        document.getElementById("editQual").value = state.qualification || "";
+        document.getElementById("editCollege").value = state.college || "";
+        document.getElementById("editBranch").value = state.branch || "";
+        document.getElementById("editYear").value = state.year || "";
+        document.getElementById("editCgpa").value = state.cgpa || "";
+        document.getElementById("editGoal").value = state.careerGoal || "";
+        document.getElementById("editOverlay").classList.add("active");
+      }
+
+      function closeEditModal() {
+        document.getElementById("editOverlay").classList.remove("active");
+      }
+
+      function saveProfile() {
+        state.name =
+          document.getElementById("editName").value.trim() || state.name;
+        state.bio = document.getElementById("editBio").value.trim();
+        state.phone = document.getElementById("editPhone").value.trim();
+        state.qualification = document.getElementById("editQual").value;
+        state.college = document.getElementById("editCollege").value.trim();
+        state.branch = document.getElementById("editBranch").value.trim();
+        state.year = document.getElementById("editYear").value;
+        state.cgpa = document.getElementById("editCgpa").value.trim();
+        state.careerGoal = document.getElementById("editGoal").value.trim();
+        saveState();
+        closeEditModal();
+        renderProfile();
+        lpToast("Profile updated! ✅");
+      }
+
+      renderProfile();
+    </script>
+  </body>
+</html>
