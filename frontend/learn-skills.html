@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnPath — Learn Skills</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .skills-hero {
+        padding: 24px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .skills-hero::after {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -8%;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .skills-hero h1 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+      }
+      .skills-hero p {
+        font-size: 0.88rem;
+        opacity: 0.9;
+        margin-top: 4px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Dashboard */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .skill-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .skill-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+      }
+      .skill-icon {
+        font-size: 2.5rem;
+        background: var(--surface2);
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+      }
+      .skill-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--text);
+      }
+      .skill-desc {
+        font-size: 0.85rem;
+        color: var(--text3);
+        line-height: 1.4;
+      }
+      .skill-progress {
+        margin-top: auto;
+      }
+      .progress-bar-bg {
+        width: 100%;
+        height: 6px;
+        background: var(--surface2);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 8px;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+      .progress-text {
+        font-size: 0.75rem;
+        color: var(--text2);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      /* Roadmap Detailed View Layout */
+      #roadmapView {
+        display: none;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface2);
+        color: var(--text);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-bottom: 20px;
+        transition: background 0.2s;
+      }
+      .back-btn:hover {
+        background: var(--surface);
+      }
+
+      .learning-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .learning-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Left: Roadmap Sidebar */
+      .roadmap-sidebar {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .roadmap-sidebar h3 {
+        font-family: "Syne", sans-serif;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .roadmap-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .roadmap-node {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+      }
+      .roadmap-node:hover {
+        background: var(--surface);
+      }
+      .roadmap-node.active {
+        background: var(--surface2);
+        border-color: var(--accent);
+      }
+      .node-status {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .roadmap-node.completed .node-status {
+        background: var(--success);
+        border-color: var(--success);
+      }
+      .roadmap-node.completed .node-status::after {
+        content: "✓";
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: bold;
+      }
+      .node-name {
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1.3;
+      }
+      
+      /* Right: Content Viewer */
+      .content-viewer {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+      .viewer-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .viewer-title {
+        font-family: "Syne", sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .viewer-type {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+        background: var(--surface2);
+        border-radius: 6px;
+        color: var(--text2);
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      
+      .viewer-media {
+        width: 100%;
+        background: #000;
+        aspect-ratio: 16/9;
+      }
+      .viewer-media iframe, .viewer-media object {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      .viewer-task-section {
+        padding: 24px;
+      }
+      .task-box {
+        background: var(--surface);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px dashed var(--border);
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .task-checkbox {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        border: 2px solid var(--text3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+        margin-top: 2px;
+      }
+      .task-checkbox:hover {
+        border-color: var(--accent);
+      }
+      .task-box.completed .task-checkbox {
+        background: var(--success);
+        border-color: var(--success);
+      }
+      .task-box.completed .task-checkbox::after {
+        content: "✓";
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+      .task-info {
+        flex: 1;
+      }
+      .task-label {
+        font-size: 0.8rem;
+        color: var(--text3);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+      }
+      .task-desc {
+        font-size: 1.05rem;
+        color: var(--text);
+        line-height: 1.5;
+      }
+      .task-box.completed .task-desc {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+      
+      .empty-state {
+        padding: 40px;
+        text-align: center;
+        color: var(--text3);
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left"><h2 class="topbar-title">Learn Skills</h2></div>
+      <div class="topbar-right">
+        <div class="topbar-stat">⚡ <span id="topXp">0</span> XP</div>
+        <button
+          class="topbar-btn"
+          id="themeToggleBtn"
+          onclick="lpToggleTheme()"
+        >
+          ☀️
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        
+        <!-- Dashboard View -->
+        <div id="dashboardView">
+          <div class="skills-hero">
+            <h1>🚀 Learn Skills</h1>
+            <p>
+              Master new skills with structured roadmaps, curated resources, and practical tasks. Start your journey today!
+            </p>
+          </div>
+          
+          <div class="skills-grid" id="skillsGrid">
+            <!-- Rendered via JS -->
+            <div style="text-align: center; color: var(--text3); padding: 40px; grid-column: 1 / -1;">
+              Loading roadmaps...
+            </div>
+          </div>
+        </div>
+
+        <!-- Roadmap & Content View -->
+        <div id="roadmapView">
+          <button class="back-btn" onclick="showDashboard()">← Back to Skills</button>
+          
+          <div class="learning-layout">
+            <!-- Left: Roadmap Path -->
+            <div class="roadmap-sidebar">
+              <h3 id="sidebarTitle">Roadmap</h3>
+              <div class="roadmap-list" id="roadmapList">
+                <!-- Rendered via JS -->
+              </div>
+            </div>
+
+            <!-- Right: Media & Task Viewer -->
+            <div class="content-viewer" id="contentViewer">
+              <!-- Rendered via JS -->
+              <div class="empty-state">Select a topic from the roadmap to start learning.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script>
+      lpAuthGuard();
+      lpInitPage("learn-skills");
+      document.getElementById("topXp").textContent = state.xp || 0;
+
+      let roadmaps = [];
+      let skillsProgress = {};
+      let currentSkill = null;
+      let currentNode = null;
+
+      async function init() {
+        try {
+          const roadmapsRes = await API.getSkillRoadmaps();
+          roadmaps = roadmapsRes.roadmaps || [];
+          
+          const progressRes = await API.getSkillProgress();
+          skillsProgress = progressRes.skillsProgress || {};
+
+          renderDashboard();
+        } catch (e) {
+          console.error("Failed to load skills data", e);
+          lpToast("Failed to load skills data. Please try again.");
+        }
+      }
+
+      function renderDashboard() {
+        const grid = document.getElementById("skillsGrid");
+        grid.innerHTML = "";
+
+        roadmaps.forEach(skill => {
+          const completedNodes = skillsProgress[skill.id] || [];
+          const totalNodes = skill.nodes.length;
+          const percent = totalNodes > 0 ? Math.round((completedNodes.length / totalNodes) * 100) : 0;
+
+          const card = document.createElement("div");
+          card.className = "skill-card";
+          card.onclick = () => openRoadmap(skill.id);
+          
+          card.innerHTML = `
+            <div class="skill-icon">${skill.icon}</div>
+            <div class="skill-title">${skill.title}</div>
+            <div class="skill-desc">${skill.description}</div>
+            <div class="skill-progress">
+              <div class="progress-text">
+                <span>Progress</span>
+                <span>${percent}%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${percent}%;"></div>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      function openRoadmap(skillId) {
+        currentSkill = roadmaps.find(r => r.id === skillId);
+        if (!currentSkill) return;
+
+        document.getElementById("dashboardView").style.display = "none";
+        document.getElementById("roadmapView").style.display = "block";
+        document.getElementById("sidebarTitle").innerHTML = `${currentSkill.icon} ${currentSkill.title}`;
+        
+        // Auto-select the first uncompleted node, or the very first node
+        const completedNodes = skillsProgress[currentSkill.id] || [];
+        currentNode = currentSkill.nodes.find(n => !completedNodes.includes(n.id)) || currentSkill.nodes[0];
+
+        renderSidebarList();
+        renderViewer();
+      }
+
+      function showDashboard() {
+        document.getElementById("roadmapView").style.display = "none";
+        document.getElementById("dashboardView").style.display = "block";
+        currentSkill = null;
+        currentNode = null;
+        renderDashboard(); // Re-render to update progress bars
+      }
+
+      function renderSidebarList() {
+        const list = document.getElementById("roadmapList");
+        list.innerHTML = "";
+        const completedNodes = skillsProgress[currentSkill.id] || [];
+
+        currentSkill.nodes.forEach(node => {
+          const isCompleted = completedNodes.includes(node.id);
+          const isActive = currentNode && currentNode.id === node.id;
+          
+          const el = document.createElement("div");
+          el.className = `roadmap-node ${isCompleted ? "completed" : ""} ${isActive ? "active" : ""}`;
+          el.id = `nav-${node.id}`;
+          el.onclick = () => {
+            currentNode = node;
+            renderSidebarList(); // re-render to update active state
+            renderViewer();
+          };
+
+          el.innerHTML = `
+            <div class="node-status"></div>
+            <div class="node-name">${node.title}</div>
+          `;
+          list.appendChild(el);
+        });
+      }
+
+      function renderViewer() {
+        const viewer = document.getElementById("contentViewer");
+        if (!currentNode) {
+          viewer.innerHTML = '<div class="empty-state">Select a topic to start learning.</div>';
+          return;
+        }
+
+        const completedNodes = skillsProgress[currentSkill.id] || [];
+        const isCompleted = completedNodes.includes(currentNode.id);
+
+        let mediaHtml = "";
+        if (currentNode.type === "video") {
+          mediaHtml = `<iframe src="${currentNode.url}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+        } else if (currentNode.type === "pdf") {
+          mediaHtml = `<object data="${currentNode.url}" type="application/pdf">
+            <p>Your browser doesn't have a PDF plugin. <a href="${currentNode.url}" target="_blank">Click here to download the PDF file.</a></p>
+          </object>`;
+        } else {
+          mediaHtml = `<div class="empty-state">No media for this topic.</div>`;
+        }
+
+        viewer.innerHTML = `
+          <div class="viewer-header">
+            <div class="viewer-title">${currentNode.title}</div>
+            <div class="viewer-type">${currentNode.type} Resource</div>
+          </div>
+          
+          <div class="viewer-media">
+            ${mediaHtml}
+          </div>
+          
+          <div class="viewer-task-section">
+            <div class="task-box ${isCompleted ? "completed" : ""}" id="taskBox">
+              <div class="task-checkbox" onclick="toggleCurrentTask()"></div>
+              <div class="task-info">
+                <div class="task-label">Practical Task</div>
+                <div class="task-desc">${currentNode.task}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      async function toggleCurrentTask() {
+        if (!currentSkill || !currentNode) return;
+        
+        const skillId = currentSkill.id;
+        const nodeId = currentNode.id;
+        
+        if (!skillsProgress[skillId]) {
+          skillsProgress[skillId] = [];
+        }
+        
+        const completedNodes = skillsProgress[skillId];
+        const isCurrentlyCompleted = completedNodes.includes(nodeId);
+        const newCompletedState = !isCurrentlyCompleted;
+
+        // Optimistic UI update
+        if (newCompletedState) {
+          completedNodes.push(nodeId);
+          document.getElementById("taskBox").classList.add("completed");
+          document.getElementById(`nav-${nodeId}`).classList.add("completed");
+          lpToast("Task completed! +20 XP 🎉");
+          if (window.API) {
+            API.addXp(20, "skill_task").then(res => {
+              state.xp = res.xp;
+              document.getElementById("topXp").textContent = state.xp;
+            });
+          }
+        } else {
+          skillsProgress[skillId] = completedNodes.filter(id => id !== nodeId);
+          document.getElementById("taskBox").classList.remove("completed");
+          document.getElementById(`nav-${nodeId}`).classList.remove("completed");
+        }
+
+        // Backend update
+        try {
+          await API.updateSkillProgress(skillId, nodeId, newCompletedState);
+        } catch (e) {
+          console.error("Failed to save progress", e);
+          lpToast("Error saving progress.");
+        }
+      }
+
+      // Start
+      init();
+    </script>
+  </body>
+</html>

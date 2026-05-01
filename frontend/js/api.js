@@ -409,6 +409,22 @@ async function apiAiMockInterview(company, round, count) {
   });
 }
 
+// ─── Skills API ──────────────────────────────────────────────
+async function apiGetSkillRoadmaps() {
+  return apiFetch("/skills/roadmaps");
+}
+
+async function apiGetSkillProgress() {
+  return apiFetch("/skills/progress");
+}
+
+async function apiUpdateSkillProgress(skillId, nodeId, completed) {
+  return apiFetch("/skills/progress", {
+    method: "POST",
+    body: { skillId, nodeId, completed },
+  });
+}
+
 // ─── Health Check ────────────────────────────────────────────
 async function apiHealthCheck() {
   try {
@@ -478,6 +494,10 @@ window.API = {
   aiSolve: apiAiSolve,
   aiInterviewTips: apiAiInterviewTips,
   aiMockInterview: apiAiMockInterview,
+  // Skills
+  getSkillRoadmaps: apiGetSkillRoadmaps,
+  getSkillProgress: apiGetSkillProgress,
+  updateSkillProgress: apiUpdateSkillProgress,
   // Utils
   healthCheck: apiHealthCheck,
 };

@@ -24,6 +24,12 @@ const SIDEBAR_ITEMS = [
     label: "Study Planner",
     href: "study-planner.html",
   },
+  {
+    id: "learn-skills",
+    icon: "🧠",
+    label: "Learn Skills",
+    href: "learn-skills.html",
+  },
   { id: "ai-tutor", icon: "🤖", label: "AI Tutor", href: "ai-tutor.html" },
   { id: "notes", icon: "📒", label: "Notes", href: "notes.html" },
   { section: "Social" },
