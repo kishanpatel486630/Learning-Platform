@@ -22,8 +22,7 @@ except Exception as e:
 # Context processor for db access in routes
 @app.before_request
 def before_request():
-    g.db = db
-    # Simple JWT auth check for API routes
+    g.db = db  # db is a pymongo Database object or None
     if request.path.startswith("/api/") and request.path != "/api/auth/login":
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):

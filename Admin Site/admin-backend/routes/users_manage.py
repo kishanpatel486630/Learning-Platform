@@ -9,14 +9,14 @@ def serialize_user(u):
 
 @users_bp.route("/", methods=["GET"])
 def get_users():
-    if not g.db:
+    if g.db is None:
         return jsonify({"error": "Database not connected"}), 500
     users = list(g.db.users.find({}, {"password": 0}))
     return jsonify({"users": [serialize_user(u) for u in users]})
 
 @users_bp.route("/<user_id>/ban", methods=["POST"])
 def ban_user(user_id):
-    if not g.db:
+    if g.db is None:
         return jsonify({"error": "Database not connected"}), 500
     try:
         g.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"banned": True}})
@@ -26,7 +26,7 @@ def ban_user(user_id):
 
 @users_bp.route("/<user_id>/unban", methods=["POST"])
 def unban_user(user_id):
-    if not g.db:
+    if g.db is None:
         return jsonify({"error": "Database not connected"}), 500
     try:
         g.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"banned": False}})

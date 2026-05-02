@@ -2,7 +2,9 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
-load_dotenv()
+# .env lives in the parent "Admin Site/" folder, one level up from admin-backend/
+_env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+load_dotenv(dotenv_path=_env_path)
 
 class Config:
     """Admin backend configuration."""

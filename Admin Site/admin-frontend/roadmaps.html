@@ -16,148 +16,68 @@
         padding: 24px;
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 14px;
         transition: all 0.3s;
       }
-      .roadmap-card:hover {
-        border-color: var(--accent);
-        box-shadow: 0 8px 24px rgba(59,130,246,0.1);
-      }
-      .roadmap-card-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
-      }
+      .roadmap-card:hover { border-color: var(--accent); box-shadow: 0 8px 24px rgba(59,130,246,0.1); }
+      .roadmap-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
       .roadmap-icon {
-        font-size: 2.2rem;
+        font-size: 2rem;
         background: rgba(59,130,246,0.1);
         border-radius: 12px;
         width: 52px; height: 52px;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
       }
       .roadmap-info { flex: 1; }
-      .roadmap-title {
-        font-family: "Syne", sans-serif;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 4px;
-      }
-      .roadmap-desc {
-        font-size: 0.88rem;
-        color: var(--text3);
-        line-height: 1.4;
-      }
-      .roadmap-meta {
-        font-family: "JetBrains Mono", monospace;
-        font-size: 0.78rem;
-        color: var(--text3);
-      }
+      .roadmap-title { font-family: "Syne", sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+      .roadmap-desc { font-size: 0.88rem; color: var(--text3); line-height: 1.4; }
+      .roadmap-meta { font-family: "JetBrains Mono", monospace; font-size: 0.78rem; color: var(--text3); }
       .roadmap-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-      .publish-btn-live {
-        background: rgba(239,68,68,0.1);
-        border: 1px solid rgba(239,68,68,0.25);
-        color: var(--danger);
-        padding: 6px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: all 0.2s;
-      }
-      .publish-btn-live:hover { background: rgba(239,68,68,0.2); }
-      .publish-btn-draft {
-        background: rgba(16,185,129,0.1);
-        border: 1px solid rgba(16,185,129,0.25);
-        color: var(--success);
-        padding: 6px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: all 0.2s;
-      }
-      .publish-btn-draft:hover { background: rgba(16,185,129,0.2); }
-      .delete-btn {
-        background: none;
-        border: 1px solid var(--border);
-        color: var(--text3);
-        padding: 6px 14px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.82rem;
-        font-weight: 600;
-        transition: all 0.2s;
-      }
-      .delete-btn:hover { border-color: var(--danger); color: var(--danger); }
+      .btn-publish { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
+      .btn-publish:hover { background: rgba(16,185,129,0.2); }
+      .btn-unpublish { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); color: var(--danger); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
+      .btn-unpublish:hover { background: rgba(239,68,68,0.18); }
+      .btn-edit { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: var(--accent); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+      .btn-edit:hover { background: rgba(59,130,246,0.2); }
+      .btn-delete { background: none; border: 1px solid var(--border); color: var(--text3); padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 0.82rem; font-weight: 600; transition: all 0.2s; }
+      .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
       /* Create Modal */
-      .modal-backdrop {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(6px);
-        display: flex; align-items: center; justify-content: center;
-        z-index: 500;
-        display: none;
-      }
+      .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 500; }
       .modal-backdrop.open { display: flex; }
-      .modal-box {
-        background: var(--bg2);
-        border: 1px solid var(--border2);
-        border-radius: 20px;
-        padding: 36px;
-        width: 100%; max-width: 520px;
-        animation: fadeUp 0.25s ease;
-      }
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .modal-title {
-        font-family: "Syne", sans-serif;
-        font-size: 1.4rem;
-        font-weight: 700;
-        margin-bottom: 24px;
-      }
-      .modal-footer {
-        display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;
-      }
-      .logout-btn {
-        background: none; border: 1px solid var(--border);
-        color: var(--text2); padding: 6px 14px; border-radius: 8px;
-        cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
-      }
+      .modal-box { background: var(--bg2); border: 1px solid var(--border2); border-radius: 20px; padding: 36px; width: 100%; max-width: 500px; animation: fadeUp 0.25s ease; }
+      @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+      .modal-title { font-family: "Syne", sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; }
+      .modal-footer { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+      .icon-preview { font-size: 2rem; text-align: center; padding: 8px; }
+      .logout-btn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
       .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+      #toast { position:fixed; bottom:24px; right:24px; background:var(--card-bg); border:1px solid var(--accent); color:var(--text); padding:12px 20px; border-radius:12px; font-weight:600; z-index:9999; box-shadow:var(--shadow); opacity:0; transform:translateY(20px); transition:all 0.3s; pointer-events:none; }
+      #toast.show { opacity:1; transform:translateY(0); }
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-icon">🛡️</div>
-        <div class="logo-text">AdminPanel</div>
+      <div class="sb-logo">
+        <div class="sb-logo-icon">🛡️</div>
+        <div class="sb-logo-text">AdminPanel</div>
+        <button class="sb-collapse-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">◀</button>
       </div>
-      <div class="sidebar-nav">
-        <a href="dashboard.html" class="nav-item">
-          <span class="nav-icon">📊</span>
-          <span class="nav-text">Overview</span>
-        </a>
-        <a href="users.html" class="nav-item">
-          <span class="nav-icon">👥</span>
-          <span class="nav-text">Manage Users</span>
-        </a>
-        <a href="roadmaps.html" class="nav-item active">
-          <span class="nav-icon">🗺️</span>
-          <span class="nav-text">Study Plans</span>
-        </a>
+      <div class="sb-nav">
+        <a href="dashboard.html" class="sb-link"><span class="sb-link-icon">📊</span><span class="sb-link-text">Overview</span></a>
+        <a href="users.html" class="sb-link"><span class="sb-link-icon">👥</span><span class="sb-link-text">Manage Users</span></a>
+        <a href="roadmaps.html" class="sb-link active"><span class="sb-link-icon">🗺️</span><span class="sb-link-text">Study Plans</span></a>
+      </div>
+      <div class="sb-user">
+        <div class="sb-user-avatar" style="background:var(--accent);">A</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name">Admin</div>
+          <div class="sb-user-email" id="sbEmail">admin@learnpath.com</div>
+        </div>
       </div>
     </div>
 
-    <!-- Topbar -->
     <div class="topbar">
       <div class="topbar-left">
-        <button class="topbar-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">☰</button>
         <h2 class="topbar-title">Study Plans & Roadmaps</h2>
       </div>
       <div class="topbar-right">
@@ -169,27 +89,29 @@
     <!-- Create Modal -->
     <div class="modal-backdrop" id="createModal">
       <div class="modal-box">
-        <div class="modal-title">➕ Create New Study Plan</div>
+        <div class="modal-title">➕ New Study Plan</div>
         <div class="lp-input-group">
-          <label>Title</label>
+          <label>Icon (Emoji)</label>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <input type="text" class="lp-input" id="newIcon" placeholder="📚" maxlength="4" style="font-size:1.4rem;width:80px;" oninput="document.getElementById('iconPreview').textContent=this.value||'📚'" />
+            <span id="iconPreview" style="font-size:2.5rem;">📚</span>
+          </div>
+        </div>
+        <div class="lp-input-group">
+          <label>Title *</label>
           <input type="text" class="lp-input" id="newTitle" placeholder="e.g. Python for Beginners" />
         </div>
         <div class="lp-input-group">
-          <label>Description</label>
-          <input type="text" class="lp-input" id="newDesc" placeholder="Brief description of the roadmap" />
-        </div>
-        <div class="lp-input-group">
-          <label>Icon (Emoji)</label>
-          <input type="text" class="lp-input" id="newIcon" placeholder="📚" maxlength="4" style="font-size:1.5rem;" />
+          <label>Short Description</label>
+          <input type="text" class="lp-input" id="newDesc" placeholder="What students will learn..." />
         </div>
         <div class="modal-footer">
           <button class="lp-btn lp-btn-secondary" onclick="closeCreateModal()">Cancel</button>
-          <button class="lp-btn lp-btn-primary" onclick="submitCreateRoadmap()">Create Draft</button>
+          <button class="lp-btn lp-btn-primary" onclick="submitCreate()">Create & Build →</button>
         </div>
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
       <div class="page-content">
         <div class="lp-section-header">
@@ -199,24 +121,31 @@
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;" id="roadmapsContainer">
-          <!-- Injected via JS -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;" id="roadmapsContainer">
+          <div class="lp-skeleton" style="height:180px;border-radius:20px;"></div>
+          <div class="lp-skeleton" style="height:180px;border-radius:20px;"></div>
+          <div class="lp-skeleton" style="height:180px;border-radius:20px;"></div>
         </div>
       </div>
     </div>
 
-    <!-- Scripts -->
+    <div id="toast"></div>
+
     <script src="js/admin-api.js"></script>
     <script>
       if (!localStorage.getItem("adminToken")) window.location.href = "index.html";
-
       const savedTheme = localStorage.getItem("adminTheme");
       if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+      document.getElementById("sbEmail").textContent = localStorage.getItem("adminEmail") || "admin@learnpath.com";
 
-      function doLogout() {
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminEmail");
-        window.location.href = "index.html";
+      function doLogout() { localStorage.removeItem("adminToken"); localStorage.removeItem("adminEmail"); window.location.href = "index.html"; }
+
+      function showToast(msg, isError = false) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.borderColor = isError ? "var(--danger)" : "var(--accent)";
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
       }
 
       function openCreateModal() {
@@ -225,66 +154,38 @@
       }
       function closeCreateModal() {
         document.getElementById("createModal").classList.remove("open");
-        document.getElementById("newTitle").value = "";
-        document.getElementById("newDesc").value = "";
-        document.getElementById("newIcon").value = "";
+        ["newTitle","newDesc","newIcon"].forEach(id => document.getElementById(id).value = "");
+        document.getElementById("iconPreview").textContent = "📚";
       }
 
-      async function submitCreateRoadmap() {
+      async function submitCreate() {
         const title = document.getElementById("newTitle").value.trim();
         const description = document.getElementById("newDesc").value.trim();
         const icon = document.getElementById("newIcon").value.trim() || "📚";
-
-        if (!title) {
-          alert("Title is required.");
-          return;
-        }
-
+        if (!title) { showToast("❌ Title is required", true); return; }
         try {
-          await AdminAPI.createRoadmap({ title, description, icon, is_published: false });
+          const res = await AdminAPI.createRoadmap({ title, description, icon, is_published: false });
           closeCreateModal();
-          await loadRoadmaps();
-          showToast("✅ Roadmap created as Draft!");
-        } catch (e) {
-          alert("Error: " + e.message);
-        }
-      }
-
-      function showToast(msg) {
-        let t = document.getElementById("toastEl");
-        if (!t) {
-          t = document.createElement("div");
-          t.id = "toastEl";
-          t.style.cssText = "position:fixed;bottom:24px;right:24px;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);padding:12px 20px;border-radius:12px;font-weight:600;z-index:9999;box-shadow:var(--shadow);transition:all 0.3s;";
-          document.body.appendChild(t);
-        }
-        t.textContent = msg;
-        t.style.opacity = "1";
-        t.style.transform = "translateY(0)";
-        setTimeout(() => { t.style.opacity = "0"; t.style.transform = "translateY(20px)"; }, 3000);
+          // Go directly to builder to add phases
+          window.location.href = `roadmap-builder.html?id=${res.roadmap._id}&title=${encodeURIComponent(title)}`;
+        } catch (e) { showToast("❌ " + e.message, true); }
       }
 
       async function loadRoadmaps() {
         const container = document.getElementById("roadmapsContainer");
-        container.innerHTML = `<div class="lp-skeleton" style="height:140px;border-radius:20px;"></div>`.repeat(3);
-
         try {
           const res = await AdminAPI.getRoadmaps();
-          container.innerHTML = "";
-
           const plans = res.roadmaps;
           const liveCount = plans.filter(r => r.is_published).length;
-          document.getElementById("planSubtitle").textContent = `${plans.length} total plans · ${liveCount} published`;
-
+          document.getElementById("planSubtitle").textContent = `${plans.length} total · ${liveCount} published · ${plans.length - liveCount} drafts`;
+          container.innerHTML = "";
           if (plans.length === 0) {
             container.innerHTML = `<div class="lp-empty" style="grid-column:1/-1"><div class="lp-empty-icon">🗺️</div><div class="lp-empty-text">No study plans yet. Create your first one!</div></div>`;
             return;
           }
-
           plans.forEach(r => {
             const isLive = r.is_published;
-            const nodeCount = r.nodes ? r.nodes.length : 0;
-
+            const nodeCount = (r.nodes || []).length;
             const card = document.createElement("div");
             card.className = "roadmap-card";
             card.innerHTML = `
@@ -298,41 +199,30 @@
               </div>
               <div class="roadmap-meta">📘 ${nodeCount} phase${nodeCount !== 1 ? 's' : ''}</div>
               <div class="roadmap-actions">
-                <button class="${isLive ? 'publish-btn-live' : 'publish-btn-draft'}" onclick="togglePublish('${r._id}', ${!isLive})">
+                <a class="btn-edit" href="roadmap-builder.html?id=${r._id}&title=${encodeURIComponent(r.title)}">✏️ Edit Phases</a>
+                <button class="${isLive ? 'btn-unpublish' : 'btn-publish'}" onclick="togglePublish('${r._id}', ${!isLive}, this)">
                   ${isLive ? '⏸ Unpublish' : '▶ Publish'}
                 </button>
-                <button class="delete-btn" onclick="deleteRoadmap('${r._id}', '${r.title}')">🗑️ Delete</button>
-              </div>
-            `;
+                <button class="btn-delete" onclick="deleteRoadmap('${r._id}', '${r.title.replace(/'/g, "\\'")}')">🗑️</button>
+              </div>`;
             container.appendChild(card);
           });
-        } catch (e) {
-          container.innerHTML = `<div class="lp-empty" style="grid-column:1/-1;color:var(--danger);">Failed to load roadmaps: ${e.message}</div>`;
-        }
+        } catch (e) { container.innerHTML = `<div class="lp-empty" style="grid-column:1/-1;color:var(--danger);">Failed: ${e.message}</div>`; }
       }
 
-      async function togglePublish(id, shouldPublish) {
-        if (!shouldPublish) {
-          if (!confirm("Unpublishing will immediately remove this plan from all users, including those already enrolled. Continue?")) return;
-        }
+      async function togglePublish(id, shouldPublish, btn) {
+        if (!shouldPublish && !confirm("Unpublishing will immediately remove this plan from all users. Continue?")) return;
         try {
           await AdminAPI.togglePublish(id, shouldPublish);
-          await loadRoadmaps();
-          showToast(shouldPublish ? "🟢 Roadmap published!" : "⏸ Roadmap unpublished.");
-        } catch (e) {
-          alert("Error: " + e.message);
-        }
+          showToast(shouldPublish ? "🟢 Published! Users can now see this." : "⏸ Unpublished.");
+          loadRoadmaps();
+        } catch (e) { showToast("❌ " + e.message, true); }
       }
 
       async function deleteRoadmap(id, title) {
-        if (!confirm(`Permanently delete "${title}"? This cannot be undone.`)) return;
-        try {
-          await AdminAPI.deleteRoadmap(id);
-          await loadRoadmaps();
-          showToast("🗑️ Roadmap deleted.");
-        } catch (e) {
-          alert("Error: " + e.message);
-        }
+        if (!confirm(`Permanently delete "${title}"?`)) return;
+        try { await AdminAPI.deleteRoadmap(id); showToast("🗑️ Deleted."); loadRoadmaps(); }
+        catch (e) { showToast("❌ " + e.message, true); }
       }
 
       loadRoadmaps();

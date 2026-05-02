@@ -1,4 +1,5 @@
 const API_BASE = "http://localhost:5001/api";
+// Admin fetches ALL roadmaps (published + drafts) unlike user site which only gets published
 
 const AdminAPI = {
     getToken() {

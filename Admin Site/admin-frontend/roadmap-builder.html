@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Roadmap Builder — AdminPanel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      /* ─── Builder Layout ─── */
+      .builder-wrap { display: flex; flex-direction: column; gap: 32px; }
+
+      /* ─── Meta card ─── */
+      .meta-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: 20px; padding: 28px 32px;
+        display: grid; grid-template-columns: auto 1fr 1fr; gap: 20px; align-items: end;
+      }
+      .meta-icon-wrap { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+      .meta-icon-big { font-size: 3.5rem; background: rgba(59,130,246,0.1); border-radius: 16px; width: 80px; height: 80px; display:flex; align-items:center; justify-content:center; cursor: pointer; transition: all 0.2s; }
+      .meta-icon-big:hover { background: rgba(59,130,246,0.2); }
+      .meta-icon-hint { font-size: 0.72rem; color: var(--text3); text-align: center; }
+
+      /* ─── Phases list ─── */
+      .phases-header {
+        display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+      }
+      .phase-card {
+        background: var(--card-bg); border: 1px solid var(--card-border);
+        border-radius: 18px; overflow: hidden;
+        margin-bottom: 16px; transition: border-color 0.2s;
+      }
+      .phase-card:hover { border-color: var(--accent); }
+      .phase-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 16px 20px; cursor: pointer;
+        background: var(--surface);
+      }
+      .phase-num {
+        min-width: 32px; height: 32px; border-radius: 50%;
+        background: var(--accent); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Syne", sans-serif; font-weight: 700; font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+      .phase-title-preview {
+        flex: 1; font-weight: 600; color: var(--text); font-size: 0.95rem;
+      }
+      .phase-actions { display: flex; gap: 6px; }
+      .phase-btn {
+        width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
+        background: none; color: var(--text3); cursor: pointer; display: flex;
+        align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.15s;
+      }
+      .phase-btn:hover { background: var(--surface2); color: var(--text); }
+      .phase-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+      .phase-body {
+        padding: 20px 24px; display: none; border-top: 1px solid var(--border);
+        flex-direction: column; gap: 16px;
+      }
+      .phase-body.open { display: flex; }
+      .phase-body label { font-size: 0.82rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; }
+      .phase-body textarea.lp-input { min-height: 100px; resize: vertical; font-family: "DM Sans", sans-serif; line-height: 1.6; }
+
+      /* YouTube preview */
+      .yt-preview { width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 12px; background: #000; display: none; }
+      .yt-preview.visible { display: block; }
+      .yt-hint { font-size: 0.78rem; color: var(--text3); margin-top: 4px; font-family: "JetBrains Mono", monospace; }
+
+      /* ─── Add Phase button ─── */
+      .add-phase-btn {
+        width: 100%; padding: 16px; border: 2px dashed var(--border2);
+        border-radius: 18px; background: none; color: var(--text3);
+        font-size: 1rem; cursor: pointer; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+      }
+      .add-phase-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.05); }
+
+      /* ─── Floating save bar ─── */
+      .save-bar {
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+        background: var(--bg2); border: 1px solid var(--border2);
+        border-radius: 16px; padding: 14px 24px;
+        display: flex; align-items: center; gap: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        z-index: 100;
+      }
+      .save-status { font-size: 0.85rem; color: var(--text3); }
+      .save-status.saved { color: var(--success); }
+      .save-status.saving { color: var(--warning); }
+      .logout-btn { background: none; border: 1px solid var(--border); color: var(--text2); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+      .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+      #toast { position:fixed; bottom:90px; right:24px; background:var(--card-bg); border:1px solid var(--accent); color:var(--text); padding:12px 20px; border-radius:12px; font-weight:600; z-index:9999; box-shadow:var(--shadow); opacity:0; transform:translateY(20px); transition:all 0.3s; pointer-events:none; }
+      #toast.show { opacity:1; transform:translateY(0); }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar" id="sidebar">
+      <div class="sb-logo">
+        <div class="sb-logo-icon">🛡️</div>
+        <div class="sb-logo-text">AdminPanel</div>
+        <button class="sb-collapse-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">◀</button>
+      </div>
+      <div class="sb-nav">
+        <a href="dashboard.html" class="sb-link"><span class="sb-link-icon">📊</span><span class="sb-link-text">Overview</span></a>
+        <a href="users.html" class="sb-link"><span class="sb-link-icon">👥</span><span class="sb-link-text">Manage Users</span></a>
+        <a href="roadmaps.html" class="sb-link active"><span class="sb-link-icon">🗺️</span><span class="sb-link-text">Study Plans</span></a>
+      </div>
+      <div class="sb-user">
+        <div class="sb-user-avatar" style="background:var(--accent);">A</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name">Admin</div>
+          <div class="sb-user-email" id="sbEmail">admin@learnpath.com</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <a href="roadmaps.html" style="color:var(--text3);font-size:1.2rem;text-decoration:none;margin-right:8px;">←</a>
+        <h2 class="topbar-title" id="topbarTitle">Roadmap Builder</h2>
+      </div>
+      <div class="topbar-right">
+        <span class="lp-tag" id="publishTag">🟡 Draft</span>
+        <button class="lp-btn lp-btn-primary" id="publishBtn" onclick="togglePublish()">▶ Publish to Users</button>
+        <button class="logout-btn" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="page-content">
+        <div class="builder-wrap">
+
+          <!-- Roadmap Meta -->
+          <div class="meta-card" id="metaCard">
+            <div class="meta-icon-wrap">
+              <div class="meta-icon-big" id="iconDisplay" title="Click to change" onclick="changeIcon()">📚</div>
+              <div class="meta-icon-hint">Click to edit icon</div>
+              <input type="text" id="iconInput" class="lp-input" style="width:80px;font-size:1.2rem;display:none;" maxlength="4" oninput="document.getElementById('iconDisplay').textContent=this.value||'📚'" onblur="saveIconChange()" />
+            </div>
+            <div class="lp-input-group" style="margin:0;">
+              <label>Roadmap Title</label>
+              <input type="text" class="lp-input" id="metaTitle" placeholder="e.g. Complete Python Roadmap" oninput="markDirty()" />
+            </div>
+            <div class="lp-input-group" style="margin:0;">
+              <label>Short Description</label>
+              <input type="text" class="lp-input" id="metaDesc" placeholder="What will students learn?" oninput="markDirty()" />
+            </div>
+          </div>
+
+          <!-- Phases -->
+          <div>
+            <div class="phases-header">
+              <div class="lp-section-title">📘 Learning Phases</div>
+              <div style="font-size:0.85rem;color:var(--text3);" id="phaseCountLabel">0 phases</div>
+            </div>
+
+            <div id="phasesList">
+              <!-- Dynamically injected -->
+            </div>
+
+            <button class="add-phase-btn" onclick="addPhase()">
+              ➕ Add New Phase
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Bottom padding so floating bar doesn't overlap -->
+        <div style="height:80px;"></div>
+      </div>
+    </div>
+
+    <!-- Floating Save Bar -->
+    <div class="save-bar">
+      <span class="save-status" id="saveStatus">All changes saved ✓</span>
+      <button class="lp-btn lp-btn-secondary" onclick="saveRoadmap()">💾 Save Changes</button>
+      <button class="lp-btn lp-btn-primary" id="publishBtnBar" onclick="togglePublish()">▶ Publish</button>
+    </div>
+
+    <div id="toast"></div>
+
+    <script src="js/admin-api.js"></script>
+    <script>
+      if (!localStorage.getItem("adminToken")) window.location.href = "index.html";
+      const savedTheme = localStorage.getItem("adminTheme");
+      if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+      document.getElementById("sbEmail").textContent = localStorage.getItem("adminEmail") || "admin@learnpath.com";
+      function doLogout() { localStorage.removeItem("adminToken"); localStorage.removeItem("adminEmail"); window.location.href = "index.html"; }
+
+      // ─── State ───
+      const params = new URLSearchParams(location.search);
+      let roadmapId = params.get("id");
+      let isPublished = false;
+      let isDirty = false;
+      let phases = []; // Array of {id, title, youtubeUrl, task}
+
+      function showToast(msg, isError = false) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.style.borderColor = isError ? "var(--danger)" : "var(--accent)";
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
+      }
+
+      function markDirty() {
+        isDirty = true;
+        document.getElementById("saveStatus").textContent = "Unsaved changes...";
+        document.getElementById("saveStatus").className = "save-status saving";
+      }
+
+      function markSaved() {
+        isDirty = false;
+        document.getElementById("saveStatus").textContent = "All changes saved ✓";
+        document.getElementById("saveStatus").className = "save-status saved";
+      }
+
+      // ─── Load existing roadmap ───
+      async function loadRoadmap() {
+        if (!roadmapId) { window.location.href = "roadmaps.html"; return; }
+        try {
+          const res = await AdminAPI.getRoadmaps();
+          const r = res.roadmaps.find(x => x._id === roadmapId);
+          if (!r) { showToast("Roadmap not found!", true); return; }
+
+          document.getElementById("metaTitle").value = r.title || "";
+          document.getElementById("metaDesc").value = r.description || "";
+          document.getElementById("iconDisplay").textContent = r.icon || "📚";
+          document.getElementById("topbarTitle").textContent = r.title || "Roadmap Builder";
+          isPublished = r.is_published || false;
+          phases = r.nodes || [];
+          updatePublishUI();
+          renderPhases();
+          markSaved();
+        } catch (e) { showToast("Failed to load: " + e.message, true); }
+      }
+
+      // ─── Publish ───
+      function updatePublishUI() {
+        const tag = document.getElementById("publishTag");
+        const btn1 = document.getElementById("publishBtn");
+        const btn2 = document.getElementById("publishBtnBar");
+        if (isPublished) {
+          tag.textContent = "🟢 Live";
+          tag.className = "lp-tag lp-tag-success";
+          btn1.textContent = "⏸ Unpublish";
+          btn1.className = "lp-btn lp-btn-secondary";
+          btn2.textContent = "⏸ Unpublish";
+        } else {
+          tag.textContent = "🟡 Draft";
+          tag.className = "lp-tag lp-tag-warning";
+          btn1.textContent = "▶ Publish to Users";
+          btn1.className = "lp-btn lp-btn-primary";
+          btn2.textContent = "▶ Publish";
+        }
+      }
+
+      async function togglePublish() {
+        const next = !isPublished;
+        if (!next && !confirm("Unpublishing will hide this from all users immediately. Continue?")) return;
+        // Save first if dirty
+        if (isDirty) await saveRoadmap();
+        try {
+          await AdminAPI.togglePublish(roadmapId, next);
+          isPublished = next;
+          updatePublishUI();
+          showToast(next ? "🟢 Published! Users can now see this roadmap." : "⏸ Unpublished.");
+        } catch (e) { showToast("Error: " + e.message, true); }
+      }
+
+      // ─── Icon ───
+      function changeIcon() {
+        const input = document.getElementById("iconInput");
+        input.style.display = input.style.display === "none" ? "block" : "none";
+        input.value = document.getElementById("iconDisplay").textContent;
+        if (input.style.display !== "none") input.focus();
+      }
+      function saveIconChange() {
+        document.getElementById("iconInput").style.display = "none";
+        markDirty();
+      }
+
+      // ─── Phases ───
+      function uid() { return "_" + Math.random().toString(36).substr(2,9); }
+
+      function addPhase() {
+        phases.push({ id: uid(), title: "New Phase", youtubeUrl: "", task: "", questions: "" });
+        renderPhases();
+        markDirty();
+        // Auto-expand the new phase
+        const lastIdx = phases.length - 1;
+        setTimeout(() => togglePhaseBody(lastIdx, true), 50);
+      }
+
+      function deletePhase(idx) {
+        if (!confirm(`Delete Phase ${idx + 1}?`)) return;
+        phases.splice(idx, 1);
+        renderPhases();
+        markDirty();
+      }
+
+      function movePhase(idx, dir) {
+        const newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= phases.length) return;
+        [phases[idx], phases[newIdx]] = [phases[newIdx], phases[idx]];
+        renderPhases();
+        markDirty();
+        // Reopen moved phase
+        setTimeout(() => togglePhaseBody(newIdx, true), 50);
+      }
+
+      function togglePhaseBody(idx, forceOpen = false) {
+        const body = document.getElementById(`phase-body-${idx}`);
+        if (forceOpen) body.classList.add("open");
+        else body.classList.toggle("open");
+      }
+
+      function getYoutubeEmbed(url) {
+        if (!url) return "";
+        const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+        return match ? `https://www.youtube.com/embed/${match[1]}` : "";
+      }
+
+      function updateYTPreview(idx) {
+        const url = document.getElementById(`yt-input-${idx}`).value;
+        const iframe = document.getElementById(`yt-preview-${idx}`);
+        const embed = getYoutubeEmbed(url);
+        if (embed) {
+          iframe.src = embed;
+          iframe.classList.add("visible");
+        } else {
+          iframe.src = "";
+          iframe.classList.remove("visible");
+        }
+        phases[idx].youtubeUrl = url;
+        markDirty();
+      }
+
+      function updatePhaseField(idx, field, val) {
+        phases[idx][field] = val;
+        if (field === "title") {
+          document.getElementById(`phase-title-preview-${idx}`).textContent = val || "Untitled Phase";
+        }
+        markDirty();
+      }
+
+      function renderPhases() {
+        const list = document.getElementById("phasesList");
+        list.innerHTML = "";
+        document.getElementById("phaseCountLabel").textContent = `${phases.length} phase${phases.length !== 1 ? "s" : ""}`;
+
+        phases.forEach((p, idx) => {
+          const el = document.createElement("div");
+          el.className = "phase-card";
+          const embedUrl = getYoutubeEmbed(p.youtubeUrl);
+
+          el.innerHTML = `
+            <div class="phase-header" onclick="togglePhaseBody(${idx})">
+              <div class="phase-num">${idx + 1}</div>
+              <div class="phase-title-preview" id="phase-title-preview-${idx}">${p.title || "Untitled Phase"}</div>
+              <div class="phase-actions" onclick="event.stopPropagation()">
+                <button class="phase-btn" onclick="movePhase(${idx},-1)" title="Move Up">↑</button>
+                <button class="phase-btn" onclick="movePhase(${idx},1)" title="Move Down">↓</button>
+                <button class="phase-btn danger" onclick="deletePhase(${idx})" title="Delete">🗑</button>
+              </div>
+            </div>
+            <div class="phase-body" id="phase-body-${idx}">
+              <!-- Phase Title -->
+              <div>
+                <label>Phase Title</label>
+                <input type="text" class="lp-input" value="${escHtml(p.title)}"
+                  placeholder="e.g. Phase 1: Python Basics (Week 1–2)"
+                  oninput="updatePhaseField(${idx}, 'title', this.value)" />
+              </div>
+
+              <!-- YouTube URL -->
+              <div>
+                <label>🎬 YouTube Video URL</label>
+                <input type="url" class="lp-input" id="yt-input-${idx}" value="${escHtml(p.youtubeUrl)}"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  oninput="updateYTPreview(${idx})" />
+                <div class="yt-hint">Paste a YouTube link — preview appears below</div>
+                <iframe id="yt-preview-${idx}" class="yt-preview ${embedUrl ? 'visible' : ''}"
+                  src="${embedUrl}" allowfullscreen></iframe>
+              </div>
+
+              <!-- Task -->
+              <div>
+                <label>📝 Task / Learning Goal</label>
+                <textarea class="lp-input" rows="3"
+                  placeholder="What should students do or learn in this phase? e.g. Write a function that prints Fibonacci series."
+                  oninput="updatePhaseField(${idx}, 'task', this.value)">${escHtml(p.task)}</textarea>
+              </div>
+
+              <!-- Questions -->
+              <div>
+                <label>❓ Quiz Questions (one per line)</label>
+                <textarea class="lp-input" rows="4"
+                  placeholder="What is the time complexity of binary search?&#10;Explain the difference between list and tuple.&#10;What does 'self' mean in Python?"
+                  oninput="updatePhaseField(${idx}, 'questions', this.value)">${escHtml(p.questions || "")}</textarea>
+                <div class="yt-hint">Add one question per line. Users see these as a checklist.</div>
+              </div>
+            </div>`;
+          list.appendChild(el);
+        });
+      }
+
+      function escHtml(str) {
+        return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+      }
+
+      // ─── Save ───
+      async function saveRoadmap() {
+        const title = document.getElementById("metaTitle").value.trim();
+        const description = document.getElementById("metaDesc").value.trim();
+        const icon = document.getElementById("iconDisplay").textContent.trim() || "📚";
+
+        if (!title) { showToast("❌ Title cannot be empty!", true); return; }
+
+        document.getElementById("saveStatus").textContent = "Saving...";
+        document.getElementById("saveStatus").className = "save-status saving";
+
+        try {
+          await AdminAPI.updateRoadmap(roadmapId, { title, description, icon, nodes: phases });
+          document.getElementById("topbarTitle").textContent = title;
+          markSaved();
+          showToast("💾 Saved!");
+        } catch (e) { showToast("❌ " + e.message, true); document.getElementById("saveStatus").textContent = "Save failed!"; }
+      }
+
+      // Auto-save every 30 seconds if dirty
+      setInterval(() => { if (isDirty) saveRoadmap(); }, 30000);
+
+      // ─── Init ───
+      loadRoadmap();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+<!-- ADMIN SIDEBAR COMPONENT — include this in every admin page -->
+<!-- Uses correct class names matching sidebar.css: sb-logo, sb-nav, sb-link -->
+
+<!-- Usage:
+  <div class="sidebar" id="sidebar">
+    ...paste sidebar-inner here...
+  </div>
+-->
+
+<!-- NOTE: This is a reference file only. Sidebar HTML is embedded in each page. -->

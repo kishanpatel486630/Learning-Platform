@@ -81,25 +81,33 @@
     </style>
   </head>
   <body>
-    <!-- Sidebar -->
+    <!-- Sidebar (correct class names) -->
     <div class="sidebar" id="sidebar">
-      <div class="sidebar-logo">
-        <div class="logo-icon">🛡️</div>
-        <div class="logo-text">AdminPanel</div>
+      <div class="sb-logo">
+        <div class="sb-logo-icon">🛡️</div>
+        <div class="sb-logo-text">AdminPanel</div>
+        <button class="sb-collapse-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">◀</button>
       </div>
-      <div class="sidebar-nav">
-        <a href="dashboard.html" class="nav-item">
-          <span class="nav-icon">📊</span>
-          <span class="nav-text">Overview</span>
+      <div class="sb-nav">
+        <a href="dashboard.html" class="sb-link">
+          <span class="sb-link-icon">📊</span>
+          <span class="sb-link-text">Overview</span>
         </a>
-        <a href="users.html" class="nav-item active">
-          <span class="nav-icon">👥</span>
-          <span class="nav-text">Manage Users</span>
+        <a href="users.html" class="sb-link active">
+          <span class="sb-link-icon">👥</span>
+          <span class="sb-link-text">Manage Users</span>
         </a>
-        <a href="roadmaps.html" class="nav-item">
-          <span class="nav-icon">🗺️</span>
-          <span class="nav-text">Study Plans</span>
+        <a href="roadmaps.html" class="sb-link">
+          <span class="sb-link-icon">🗺️</span>
+          <span class="sb-link-text">Study Plans</span>
         </a>
+      </div>
+      <div class="sb-user">
+        <div class="sb-user-avatar" style="background: var(--accent);">A</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name">Admin</div>
+          <div class="sb-user-email">admin@learnpath.com</div>
+        </div>
       </div>
     </div>
 
