@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "admin-backend/app.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "admin-frontend/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/admin-backend/app.py"
+    },
+    {
+      "source": "/",
+      "destination": "/admin-frontend/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/admin-frontend/$1"
+    }
+  ]
+}
