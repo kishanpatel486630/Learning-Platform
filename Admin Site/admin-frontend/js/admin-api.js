@@ -82,6 +82,12 @@ const AdminAPI = {
         return this.request(`/users/${id}/ban`, {
             method: "POST"
         });
+    },
+
+    unbanUser(id) {
+        return this.request(`/users/${id}/unban`, {
+            method: "POST"
+        });
     }
 };
 

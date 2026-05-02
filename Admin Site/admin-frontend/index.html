@@ -15,56 +15,181 @@
         min-height: 100vh;
         background: var(--bg);
       }
-      .login-box {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 20px;
-        padding: 40px;
+      .login-wrap {
+        display: flex;
         width: 100%;
-        max-width: 400px;
-        text-align: center;
-        box-shadow: var(--shadow);
+        max-width: 900px;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 24px 64px rgba(0,0,0,0.5);
       }
-      .logo-icon {
-        font-size: 3rem;
+      .login-left {
+        flex: 1;
+        background: linear-gradient(145deg, #0f172a, #1e3a5f);
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .login-left::after {
+        content: "🛡️";
+        position: absolute;
+        font-size: 200px;
+        bottom: -30px;
+        right: -30px;
+        opacity: 0.06;
+      }
+      .login-left h2 {
+        font-family: "Syne", sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+      .login-left p {
+        color: rgba(255,255,255,0.65);
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 280px;
+      }
+      .login-features {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .login-feature {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: rgba(255,255,255,0.75);
+        font-size: 0.9rem;
+      }
+      .login-feature span:first-child {
+        font-size: 1.2rem;
+      }
+      .login-right {
+        flex: 1;
+        background: var(--card-bg);
+        padding: 60px 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .login-logo {
+        font-size: 2.5rem;
         margin-bottom: 16px;
       }
       .login-title {
         font-family: "Syne", sans-serif;
         font-size: 1.8rem;
         font-weight: 700;
-        margin-bottom: 8px;
         color: var(--text);
+        margin-bottom: 6px;
       }
       .login-sub {
-        font-size: 0.9rem;
+        font-size: 0.92rem;
         color: var(--text3);
-        margin-bottom: 32px;
+        margin-bottom: 36px;
       }
       .btn-block {
         width: 100%;
         justify-content: center;
+        padding: 14px;
+        font-size: 1rem;
+      }
+      .login-error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--danger);
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-bottom: 16px;
+        display: none;
+      }
+      .login-error.visible { display: block; }
+      @media (max-width: 700px) {
+        .login-left { display: none; }
+        .login-right { padding: 40px 28px; }
       }
     </style>
   </head>
   <body>
-    <div class="login-box">
-      <div class="logo-icon">🛡️</div>
-      <h1 class="login-title">Admin Portal</h1>
-      <p class="login-sub">Secure access for platform administrators.</p>
-      
-      <div class="lp-input-group" style="text-align: left;">
-        <label>Admin Email</label>
-        <input type="email" class="lp-input" placeholder="admin@learnpath.com" id="email" />
+    <div class="login-wrap">
+      <!-- Left Panel -->
+      <div class="login-left">
+        <h2>LearnPath Admin Panel</h2>
+        <p>Full control over your learning platform. Manage users, publish roadmaps, and track performance.</p>
+        <div class="login-features">
+          <div class="login-feature"><span>🗺️</span><span>Publish & manage study roadmaps</span></div>
+          <div class="login-feature"><span>👥</span><span>User management & analytics</span></div>
+          <div class="login-feature"><span>❓</span><span>Dynamic question bank editor</span></div>
+          <div class="login-feature"><span>📊</span><span>Live dashboard metrics</span></div>
+        </div>
       </div>
-      <div class="lp-input-group" style="text-align: left;">
-        <label>Secure Password</label>
-        <input type="password" class="lp-input" placeholder="••••••••" id="password" />
+
+      <!-- Right Panel (Login Form) -->
+      <div class="login-right">
+        <div class="login-logo">🛡️</div>
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-sub">Sign in to access the Admin Control Panel.</p>
+
+        <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
+
+        <div class="lp-input-group">
+          <label>Admin Email</label>
+          <input type="email" class="lp-input" placeholder="admin@learnpath.com" id="email" />
+        </div>
+        <div class="lp-input-group">
+          <label>Password</label>
+          <input type="password" class="lp-input" placeholder="••••••••" id="password"
+            onkeydown="if(event.key==='Enter') doLogin()" />
+        </div>
+
+        <button class="lp-btn lp-btn-primary btn-block" id="loginBtn" onclick="doLogin()">
+          Login to Dashboard
+        </button>
       </div>
-      
-      <button class="lp-btn lp-btn-primary btn-block" style="margin-top: 16px;" onclick="window.location.href='dashboard.html'">
-        Login to Dashboard
-      </button>
     </div>
+
+    <script src="js/admin-api.js"></script>
+    <script>
+      // If already logged in, skip to dashboard
+      if (localStorage.getItem("adminToken")) {
+        window.location.href = "dashboard.html";
+      }
+
+      async function doLogin() {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const errEl = document.getElementById("loginError");
+        const btn = document.getElementById("loginBtn");
+
+        if (!email || !password) {
+          errEl.textContent = "Email and password are required.";
+          errEl.classList.add("visible");
+          return;
+        }
+
+        btn.textContent = "Signing in...";
+        btn.disabled = true;
+        errEl.classList.remove("visible");
+
+        try {
+          const res = await AdminAPI.login(email, password);
+          localStorage.setItem("adminToken", res.token);
+          localStorage.setItem("adminEmail", res.admin.email);
+          window.location.href = "dashboard.html";
+        } catch (e) {
+          errEl.textContent = e.message || "Invalid credentials.";
+          errEl.classList.add("visible");
+          btn.textContent = "Login to Dashboard";
+          btn.disabled = false;
+        }
+      }
+    </script>
   </body>
 </html>

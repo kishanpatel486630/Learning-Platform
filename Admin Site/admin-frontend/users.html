@@ -4,26 +4,80 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Users — AdminPanel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/variables.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
     <link rel="stylesheet" href="css/pages.css" />
     <style>
-      .user-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
+      .search-bar {
+        display: flex; gap: 12px; margin-bottom: 24px; align-items: center;
       }
-      .user-table th, .user-table td {
-        padding: 14px;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-      }
+      .search-bar .lp-input { max-width: 360px; }
+      .user-table { width: 100%; border-collapse: collapse; }
       .user-table th {
-        font-weight: 600;
-        color: var(--text2);
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 2px solid var(--border);
         font-family: "Syne", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
+      .user-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.92rem;
+        vertical-align: middle;
+      }
+      .user-table tbody tr:hover { background: var(--surface); }
+      .user-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: var(--accent);
+        display: flex; align-items: center; justify-content: center;
+        font-family: "Syne", sans-serif;
+        font-weight: 700; font-size: 0.88rem;
+        color: #fff; flex-shrink: 0;
+      }
+      .user-name-cell { display: flex; align-items: center; gap: 12px; }
+      .xp-badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .unban-btn {
+        background: rgba(16,185,129,0.1);
+        border: 1px solid rgba(16,185,129,0.3);
+        color: var(--success);
+        padding: 5px 12px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .unban-btn:hover { background: rgba(16,185,129,0.2); }
+      .ban-btn {
+        background: rgba(239,68,68,0.08);
+        border: 1px solid rgba(239,68,68,0.25);
+        color: var(--danger);
+        padding: 5px 12px;
+        border-radius: 7px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .ban-btn:hover { background: rgba(239,68,68,0.18); }
+      .empty-table { text-align: center; padding: 48px; color: var(--text3); }
+      .logout-btn {
+        background: none; border: 1px solid var(--border);
+        color: var(--text2); padding: 6px 14px; border-radius: 8px;
+        cursor: pointer; font-size: 0.85rem; transition: all 0.2s;
+      }
+      .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
     </style>
   </head>
   <body>
@@ -55,18 +109,30 @@
         <button class="topbar-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">☰</button>
         <h2 class="topbar-title">Manage Users</h2>
       </div>
+      <div class="topbar-right">
+        <div class="topbar-stat" id="userCount">– Users</div>
+        <button class="logout-btn" onclick="doLogout()">Logout</button>
+      </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
       <div class="page-content">
-        <div class="lp-card">
-          <h3 class="lp-card-title">All Registered Users</h3>
+        <div class="lp-card-flat">
+          <!-- Search Bar -->
+          <div class="search-bar">
+            <input type="text" class="lp-input" id="searchInput" placeholder="🔍  Search by name or email..." oninput="filterUsers()" />
+            <select class="lp-select" id="filterStatus" onchange="filterUsers()" style="max-width: 160px;">
+              <option value="all">All Users</option>
+              <option value="active">Active Only</option>
+              <option value="banned">Banned Only</option>
+            </select>
+          </div>
+
           <table class="user-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Name</th>
+                <th>User</th>
                 <th>Email</th>
                 <th>XP</th>
                 <th>Status</th>
@@ -74,64 +140,115 @@
               </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr><td colspan="6" class="lp-text-muted">Loading users...</td></tr>
+              <tr><td colspan="5" class="empty-table">Loading users...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- Scripts -->
     <script src="js/admin-api.js"></script>
     <script>
+      if (!localStorage.getItem("adminToken")) window.location.href = "index.html";
+
+      const savedTheme = localStorage.getItem("adminTheme");
+      if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+      function doLogout() {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminEmail");
+        window.location.href = "index.html";
+      }
+
+      let allUsers = [];
+
+      function getInitials(name) {
+        if (!name) return "?";
+        return name.split(" ").map(w => w[0]).join("").substring(0, 2).toUpperCase();
+      }
+
+      function renderUsers(users) {
+        const tbody = document.getElementById("usersTableBody");
+        if (users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-table">No users found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => {
+          const isBanned = !!u.banned;
+          return `
+            <tr>
+              <td>
+                <div class="user-name-cell">
+                  <div class="user-avatar">${getInitials(u.name)}</div>
+                  <strong>${u.name || "Anonymous"}</strong>
+                </div>
+              </td>
+              <td style="color:var(--text2);">${u.email || "–"}</td>
+              <td><span class="xp-badge">${u.xp || 0} XP</span></td>
+              <td>
+                <span class="lp-tag ${isBanned ? 'lp-tag-danger' : 'lp-tag-success'}">
+                  ${isBanned ? "🚫 Banned" : "✅ Active"}
+                </span>
+              </td>
+              <td>
+                ${isBanned
+                  ? `<button class="unban-btn" onclick="unbanUser('${u._id}')">Unban</button>`
+                  : `<button class="ban-btn" onclick="banUser('${u._id}', '${u.name || u.email}')">Ban</button>`
+                }
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function filterUsers() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+        const status = document.getElementById("filterStatus").value;
+
+        let filtered = allUsers.filter(u => {
+          const matchSearch = (u.name || "").toLowerCase().includes(query) ||
+                              (u.email || "").toLowerCase().includes(query);
+          const matchStatus = status === "all" ||
+                              (status === "banned" && u.banned) ||
+                              (status === "active" && !u.banned);
+          return matchSearch && matchStatus;
+        });
+
+        renderUsers(filtered);
+      }
+
       async function loadUsers() {
         try {
           const res = await AdminAPI.getUsers();
-          const tbody = document.getElementById("usersTableBody");
-          tbody.innerHTML = "";
-
-          if (res.users.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="lp-text-muted">No users found.</td></tr>`;
-            return;
-          }
-
-          res.users.forEach(u => {
-            const isBanned = u.banned;
-            tbody.innerHTML += `
-              <tr>
-                <td><span class="lp-text-muted" style="font-size:0.8rem;">${u._id.substring(0,8)}...</span></td>
-                <td><strong>${u.name || 'Anonymous'}</strong></td>
-                <td>${u.email}</td>
-                <td>${u.xp || 0} XP</td>
-                <td>
-                  <span class="lp-tag ${isBanned ? 'lp-tag-danger' : 'lp-tag-success'}">
-                    ${isBanned ? 'Banned' : 'Active'}
-                  </span>
-                </td>
-                <td>
-                  <button class="lp-btn lp-btn-danger lp-btn-sm" ${isBanned ? 'disabled' : ''} onclick="banUser('${u._id}')">
-                    Ban
-                  </button>
-                </td>
-              </tr>
-            `;
-          });
+          allUsers = res.users;
+          document.getElementById("userCount").textContent = `${allUsers.length} Users`;
+          renderUsers(allUsers);
         } catch (e) {
-          alert("Error loading users: " + e.message);
+          document.getElementById("usersTableBody").innerHTML =
+            `<tr><td colspan="5" class="empty-table" style="color:var(--danger);">Failed to load users: ${e.message}</td></tr>`;
         }
       }
 
-      async function banUser(id) {
-        if (!confirm("Are you sure you want to ban this user?")) return;
+      async function banUser(id, name) {
+        if (!confirm(`Ban user "${name}"? They will lose access to the platform.`)) return;
         try {
           await AdminAPI.banUser(id);
-          loadUsers();
+          await loadUsers();
         } catch (e) {
-          alert(e.message);
+          alert("Error: " + e.message);
         }
       }
 
-      // Start
+      async function unbanUser(id) {
+        try {
+          await AdminAPI.unbanUser(id);
+          await loadUsers();
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      }
+
       loadUsers();
     </script>
   </body>
