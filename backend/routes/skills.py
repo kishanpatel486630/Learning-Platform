@@ -99,30 +99,139 @@ SKILL_ROADMAPS = [
     },
     {
         "id": "sql",
-        "title": "SQL & Databases",
-        "description": "Master relational databases and advanced queries.",
+        "title": "Complete SQL Roadmap",
+        "description": "Beginner to Advanced SQL. Master relational databases, complex queries, and system design.",
         "icon": "💾",
         "nodes": [
             {
-                "id": "sql-basics",
-                "title": "1. Basic Queries (SELECT, WHERE)",
+                "id": "sql-phase1",
+                "title": "Phase 1: Basics (Week 1–2)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/HXV3zeQKqGY",
-                "task": "Code: Write a query to fetch all employees earning more than $50k."
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Understand what SQL is and write simple queries</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong>
+  <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
+    <li>What is Database, DBMS, RDBMS</li>
+    <li>Tables, Rows, Columns & SQL syntax basics</li>
+    <li>SELECT statement & WHERE conditions (=, >, <, BETWEEN, IN, LIKE)</li>
+    <li>Sorting: ORDER BY | Limiting: LIMIT</li>
+  </ul>
+</div>
+<div style='margin-bottom: 12px;'><strong>Practice:</strong> Retrieve specific data from tables, filter records (e.g., users above age 25), and pattern matching.</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Mini Task:</strong><br>
+  Create a Student table and:<br>
+  - Find top 5 students<br>
+  - Filter students with marks > 70
+</div>
+\"\"\"
             },
             {
-                "id": "sql-joins",
-                "title": "2. SQL Joins",
+                "id": "sql-phase2",
+                "title": "Phase 2: Intermediate Core (Week 3–4)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/9yeOJ0ZMUYw",
-                "task": "Code: Perform an INNER JOIN between Users and Orders tables."
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Work with real-world queries</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong>
+  <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
+    <li>Aggregate Functions: COUNT, SUM, AVG, MAX, MIN</li>
+    <li>GROUP BY, HAVING, DISTINCT, Aliases (AS)</li>
+    <li>Joins: INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL JOIN</li>
+  </ul>
+</div>
+<div style='margin-bottom: 12px;'><strong>Practice:</strong> Total sales per category, Users with no orders (LEFT JOIN), Find duplicates.</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Mini Project Idea:</strong><br>
+  Build a simple CRM database (Customers, Orders, Products).<br>
+  Write queries like: Total revenue, Top customers.
+</div>
+\"\"\"
             },
             {
-                "id": "sql-advanced",
-                "title": "3. Advanced (Window Functions)",
+                "id": "sql-phase3",
+                "title": "Phase 3: Advanced SQL (Week 5–6)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/Ww71knvhQ-s",
-                "task": "Code: Use ROW_NUMBER() to find the second highest salary."
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Handle complex queries like a pro</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong>
+  <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
+    <li>Subqueries (Nested queries) & Correlated subqueries</li>
+    <li>CASE statements</li>
+    <li>Window Functions: ROW_NUMBER(), RANK(), DENSE_RANK()</li>
+    <li>Common Table Expressions (CTE) (WITH) & Views</li>
+  </ul>
+</div>
+<div style='margin-bottom: 12px;'><strong>Practice:</strong> Top 3 salaries per department, Running totals, Ranking users.</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Mini Task:</strong><br>
+  - Find second highest salary<br>
+  - Find duplicate rows
+</div>
+\"\"\"
+            },
+            {
+                "id": "sql-phase4",
+                "title": "Phase 4: Database Design (Week 7)",
+                "type": "video",
+                "url": "https://www.youtube.com/embed/ztHopE5Wnpc",
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Think like a backend developer</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong>
+  <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
+    <li>Normalization (1NF, 2NF, 3NF)</li>
+    <li>Primary Key, Foreign Key</li>
+    <li>Relationships: One-to-One, One-to-Many, Many-to-Many</li>
+    <li>Indexes</li>
+  </ul>
+</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Practice / Task:</strong><br>
+  Design a database schema for:<br>
+  - An E-commerce app<br>
+  - Vehicle management system
+</div>
+\"\"\"
+            },
+            {
+                "id": "sql-phase5",
+                "title": "Phase 5: Advanced + Real World (Week 8–9)",
+                "type": "video",
+                "url": "https://www.youtube.com/embed/C-kIH1wYwU8",
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Industry-level SQL</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong>
+  <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
+    <li>Stored Procedures & Triggers</li>
+    <li>Transactions (COMMIT, ROLLBACK)</li>
+    <li>Query Optimization & Indexing strategies</li>
+  </ul>
+</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Practice / Task:</strong><br>
+  - Optimize slow queries<br>
+  - Create stored procedures for CRUD operations
+</div>
+\"\"\"
+            },
+            {
+                "id": "sql-phase6",
+                "title": "Phase 6: Interview & Projects (Week 10+)",
+                "type": "video",
+                "url": "https://www.youtube.com/embed/VFsQ31_iJHQ",
+                "task": \"\"\"
+<div style='margin-bottom: 8px;'><strong>Goal:</strong> Crack interviews + real projects</div>
+<div style='margin-bottom: 8px;'><strong>Topics:</strong> SQL interview questions, Complex joins & edge cases, Data analysis queries.</div>
+<div style='margin-bottom: 12px;'><strong>Practice Platforms:</strong> LeetCode (SQL section), HackerRank SQL, StrataScratch.</div>
+<div style='padding: 12px; background: var(--surface2); border-radius: 8px;'>
+  <strong>👉 Final Projects (UI/UX + Data):</strong><br>
+  - CRM Database System<br>
+  - Parking Management System<br>
+  - E-commerce analytics dashboard
+</div>
+\"\"\"
             }
         ]
     },
