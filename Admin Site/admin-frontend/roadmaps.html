@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Roadmaps — AdminPanel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🛡️</div>
+        <div class="logo-text">AdminPanel</div>
+      </div>
+      <div class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Overview</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-text">Manage Users</span>
+        </a>
+        <a href="roadmaps.html" class="nav-item active">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-text">Study Plans</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">☰</button>
+        <h2 class="topbar-title">Study Plans & Roadmaps</h2>
+      </div>
+      <div class="topbar-right">
+        <button class="lp-btn lp-btn-primary" onclick="createNewRoadmap()">➕ Create New Plan</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-content">
+        <div class="lp-grid-3" id="roadmapsContainer">
+          <!-- Roadmaps injected via JS -->
+          <p class="lp-text-muted">Loading roadmaps...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/admin-api.js"></script>
+    <script>
+      async function loadRoadmaps() {
+        try {
+          const res = await AdminAPI.getRoadmaps();
+          const container = document.getElementById("roadmapsContainer");
+          container.innerHTML = "";
+
+          if (res.roadmaps.length === 0) {
+            container.innerHTML = `<div class="lp-empty">No study plans created yet.</div>`;
+            return;
+          }
+
+          res.roadmaps.forEach(r => {
+            const isLive = r.is_published;
+            container.innerHTML += `
+              <div class="lp-card">
+                <div class="lp-card-header">
+                  <span class="lp-card-title">${r.icon} ${r.title}</span>
+                  <span class="lp-tag ${isLive ? 'lp-tag-success' : 'lp-tag-warning'}">${isLive ? 'Live' : 'Draft'}</span>
+                </div>
+                <p class="lp-text-muted" style="margin-bottom: 20px;">${r.description || 'No description provided.'}</p>
+                
+                <div style="display: flex; gap: 8px;">
+                  <button class="lp-btn lp-btn-secondary lp-btn-sm" onclick="togglePublish('${r._id}', ${!isLive})">
+                    ${isLive ? 'Unpublish' : 'Publish'}
+                  </button>
+                  <button class="lp-btn lp-btn-secondary lp-btn-sm" onclick="deleteRoadmap('${r._id}')">🗑️ Delete</button>
+                </div>
+              </div>
+            `;
+          });
+        } catch (e) {
+          alert("Error loading roadmaps: " + e.message);
+        }
+      }
+
+      async function createNewRoadmap() {
+        const title = prompt("Enter Roadmap Title (e.g. System Design):");
+        if (!title) return;
+        
+        try {
+          await AdminAPI.createRoadmap({ title, description: "New roadmap description", icon: "📚", is_published: false });
+          loadRoadmaps();
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+
+      async function togglePublish(id, shouldPublish) {
+        if (!shouldPublish) {
+          const confirmMsg = "Unpublishing this plan will hide it from new users AND completely remove it for users already enrolled. Are you sure?";
+          if (!confirm(confirmMsg)) return;
+        }
+
+        try {
+          await AdminAPI.togglePublish(id, shouldPublish);
+          loadRoadmaps();
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+
+      async function deleteRoadmap(id) {
+        if (!confirm("Are you sure you want to permanently delete this roadmap?")) return;
+        try {
+          await AdminAPI.deleteRoadmap(id);
+          loadRoadmaps();
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+
+      // Start
+      loadRoadmaps();
+    </script>
+  </body>
+</html>

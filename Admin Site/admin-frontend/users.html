@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users — AdminPanel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <link rel="stylesheet" href="css/pages.css" />
+    <style>
+      .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      .user-table th, .user-table td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      .user-table th {
+        font-weight: 600;
+        color: var(--text2);
+        font-family: "Syne", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">🛡️</div>
+        <div class="logo-text">AdminPanel</div>
+      </div>
+      <div class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Overview</span>
+        </a>
+        <a href="users.html" class="nav-item active">
+          <span class="nav-icon">👥</span>
+          <span class="nav-text">Manage Users</span>
+        </a>
+        <a href="roadmaps.html" class="nav-item">
+          <span class="nav-icon">🗺️</span>
+          <span class="nav-text">Study Plans</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">☰</button>
+        <h2 class="topbar-title">Manage Users</h2>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="page-content">
+        <div class="lp-card">
+          <h3 class="lp-card-title">All Registered Users</h3>
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>XP</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="6" class="lp-text-muted">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/admin-api.js"></script>
+    <script>
+      async function loadUsers() {
+        try {
+          const res = await AdminAPI.getUsers();
+          const tbody = document.getElementById("usersTableBody");
+          tbody.innerHTML = "";
+
+          if (res.users.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="lp-text-muted">No users found.</td></tr>`;
+            return;
+          }
+
+          res.users.forEach(u => {
+            const isBanned = u.banned;
+            tbody.innerHTML += `
+              <tr>
+                <td><span class="lp-text-muted" style="font-size:0.8rem;">${u._id.substring(0,8)}...</span></td>
+                <td><strong>${u.name || 'Anonymous'}</strong></td>
+                <td>${u.email}</td>
+                <td>${u.xp || 0} XP</td>
+                <td>
+                  <span class="lp-tag ${isBanned ? 'lp-tag-danger' : 'lp-tag-success'}">
+                    ${isBanned ? 'Banned' : 'Active'}
+                  </span>
+                </td>
+                <td>
+                  <button class="lp-btn lp-btn-danger lp-btn-sm" ${isBanned ? 'disabled' : ''} onclick="banUser('${u._id}')">
+                    Ban
+                  </button>
+                </td>
+              </tr>
+            `;
+          });
+        } catch (e) {
+          alert("Error loading users: " + e.message);
+        }
+      }
+
+      async function banUser(id) {
+        if (!confirm("Are you sure you want to ban this user?")) return;
+        try {
+          await AdminAPI.banUser(id);
+          loadUsers();
+        } catch (e) {
+          alert(e.message);
+        }
+      }
+
+      // Start
+      loadUsers();
+    </script>
+  </body>
+</html>
