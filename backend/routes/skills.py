@@ -108,7 +108,7 @@ SKILL_ROADMAPS = [
                 "title": "Phase 1: Basics (Week 1–2)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/HXV3zeQKqGY",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Understand what SQL is and write simple queries</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong>
   <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
@@ -125,14 +125,14 @@ SKILL_ROADMAPS = [
   - Find top 5 students<br>
   - Filter students with marks > 70
 </div>
-\"\"\"
+"""
             },
             {
                 "id": "sql-phase2",
                 "title": "Phase 2: Intermediate Core (Week 3–4)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/9yeOJ0ZMUYw",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Work with real-world queries</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong>
   <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
@@ -147,14 +147,14 @@ SKILL_ROADMAPS = [
   Build a simple CRM database (Customers, Orders, Products).<br>
   Write queries like: Total revenue, Top customers.
 </div>
-\"\"\"
+"""
             },
             {
                 "id": "sql-phase3",
                 "title": "Phase 3: Advanced SQL (Week 5–6)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/Ww71knvhQ-s",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Handle complex queries like a pro</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong>
   <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
@@ -170,14 +170,14 @@ SKILL_ROADMAPS = [
   - Find second highest salary<br>
   - Find duplicate rows
 </div>
-\"\"\"
+"""
             },
             {
                 "id": "sql-phase4",
                 "title": "Phase 4: Database Design (Week 7)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/ztHopE5Wnpc",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Think like a backend developer</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong>
   <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
@@ -193,14 +193,14 @@ SKILL_ROADMAPS = [
   - An E-commerce app<br>
   - Vehicle management system
 </div>
-\"\"\"
+"""
             },
             {
                 "id": "sql-phase5",
                 "title": "Phase 5: Advanced + Real World (Week 8–9)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/C-kIH1wYwU8",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Industry-level SQL</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong>
   <ul style='margin-left: 20px; list-style-type: disc; margin-top: 4px;'>
@@ -214,14 +214,14 @@ SKILL_ROADMAPS = [
   - Optimize slow queries<br>
   - Create stored procedures for CRUD operations
 </div>
-\"\"\"
+"""
             },
             {
                 "id": "sql-phase6",
                 "title": "Phase 6: Interview & Projects (Week 10+)",
                 "type": "video",
                 "url": "https://www.youtube.com/embed/VFsQ31_iJHQ",
-                "task": \"\"\"
+                "task": """
 <div style='margin-bottom: 8px;'><strong>Goal:</strong> Crack interviews + real projects</div>
 <div style='margin-bottom: 8px;'><strong>Topics:</strong> SQL interview questions, Complex joins & edge cases, Data analysis queries.</div>
 <div style='margin-bottom: 12px;'><strong>Practice Platforms:</strong> LeetCode (SQL section), HackerRank SQL, StrataScratch.</div>
@@ -231,7 +231,7 @@ SKILL_ROADMAPS = [
   - Parking Management System<br>
   - E-commerce analytics dashboard
 </div>
-\"\"\"
+"""
             }
         ]
     },
@@ -320,3 +320,4 @@ def update_progress():
         )
 
     return jsonify({"message": "Skill progress updated"})
+

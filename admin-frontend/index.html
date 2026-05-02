@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login — LearnPath</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0a0a14;
+        --card-bg: rgba(16, 20, 35, 0.85);
+        --border: rgba(59, 130, 246, 0.18);
+        --text: #e2e8f0;
+        --text2: #94a3b8;
+        --accent: #3b82f6;
+        --gradient: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+      }
+      body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .bg-shapes {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+      }
+      .shape1 {
+        position: absolute;
+        top: -10%; left: -10%;
+        width: 50vw; height: 50vw;
+        background: radial-gradient(circle, rgba(37,99,235,0.15) 0%, rgba(10,10,20,0) 70%);
+      }
+      .shape2 {
+        position: absolute;
+        bottom: -20%; right: -10%;
+        width: 60vw; height: 60vw;
+        background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(10,10,20,0) 70%);
+      }
+      .login-container {
+        position: relative;
+        z-index: 1;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 48px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        backdrop-filter: blur(12px);
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .logo h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .logo p {
+        color: var(--text2);
+        font-size: 0.9rem;
+        margin-top: 8px;
+      }
+      .input-group {
+        margin-bottom: 20px;
+      }
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text2);
+      }
+      .input-group input {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        color: var(--text);
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.3s;
+        box-sizing: border-box;
+      }
+      .input-group input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+      }
+      .btn {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--gradient);
+        color: white;
+        border: none;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(37,99,235,0.3);
+      }
+      .error {
+        color: #ef4444;
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 16px;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-shapes">
+      <div class="shape1"></div>
+      <div class="shape2"></div>
+    </div>
+    
+    <div class="login-container">
+      <div class="logo">
+        <h1>LearnPath Admin</h1>
+        <p>Secure Portal Login</p>
+      </div>
+      
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <label>Admin Email</label>
+          <input type="email" id="email" value="admin.kishan@gmail.com" required />
+        </div>
+        <div class="input-group">
+          <label>Secure Password</label>
+          <input type="password" id="password" required />
+        </div>
+        <button type="submit" class="btn" id="loginBtn">Authenticate to Portal</button>
+        <div class="error" id="errorMsg"></div>
+      </form>
+    </div>
+
+    <script>
+      document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('errorMsg');
+        const btn = document.getElementById('loginBtn');
+        
+        errorMsg.textContent = '';
+        btn.textContent = 'Authenticating...';
+        btn.disabled = true;
+
+        try {
+          // Adjust to actual backend URL in production
+          const res = await fetch('http://localhost:5000/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          const data = await res.json();
+
+          if (res.ok && data.token) {
+            localStorage.setItem('adminToken', data.token);
+            window.location.href = 'dashboard.html';
+          } else {
+            errorMsg.textContent = data.error || 'Invalid credentials';
+            btn.textContent = 'Authenticate to Portal';
+            btn.disabled = false;
+          }
+        } catch (err) {
+          errorMsg.textContent = 'Server connection failed';
+          btn.textContent = 'Authenticate to Portal';
+          btn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
