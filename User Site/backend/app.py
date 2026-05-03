@@ -38,7 +38,6 @@ from routes.planner import planner_bp
 from routes.leaderboard import leaderboard_bp
 from routes.ai import ai_bp
 from routes.skills import skills_bp
-from routes.admin import admin_bp
 
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(user_bp, url_prefix="/api/user")
@@ -49,7 +48,6 @@ app.register_blueprint(planner_bp, url_prefix="/api/planner")
 app.register_blueprint(leaderboard_bp, url_prefix="/api/leaderboard")
 app.register_blueprint(ai_bp, url_prefix="/api/ai")
 app.register_blueprint(skills_bp, url_prefix="/api/skills")
-app.register_blueprint(admin_bp, url_prefix="/api/admin")
 
 
 # ── Serve Frontend ───────────────────────────────────────────

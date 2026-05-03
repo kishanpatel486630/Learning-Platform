@@ -1,7 +1,28 @@
 /* api.js — Centralized API client for LearnPath backend */
 "use strict";
 
-const API_BASE = window.location.origin + "/api";
+const API_BASE = resolveApiBase();
+window.API_BASE = API_BASE;
+
+function resolveApiBase() {
+  const explicit =
+    window.LEARNPATH_API_BASE || localStorage.getItem("lp_api_base");
+  if (explicit) return normalizeApiBase(explicit);
+
+  if (
+    window.location.protocol === "file:" ||
+    window.location.origin === "null"
+  ) {
+    return "http://localhost:5000/api";
+  }
+
+  return `${window.location.origin}/api`;
+}
+
+function normalizeApiBase(base) {
+  const trimmed = String(base || "").replace(/\/+$/, "");
+  return trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
+}
 
 // ─── Token Management ────────────────────────────────────────
 function getAccessToken() {
@@ -429,7 +450,7 @@ async function apiUpdateSkillProgress(skillId, nodeId, completed) {
 async function apiHealthCheck() {
   try {
     const data = await apiFetch("/health");
-    return data.status === "healthy";
+    return data.status === "healthy" || data.status === "ok";
   } catch {
     return false;
   }
